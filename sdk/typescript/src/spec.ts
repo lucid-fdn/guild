@@ -117,6 +117,14 @@ export interface Artifact {
     | "decision_log"
     | "benchmark_result"
     | "skill_candidate"
+    | "test_report"
+    | "diff"
+    | "changed_files"
+    | "screenshot"
+    | "log_excerpt"
+    | "security_review"
+    | "handoff_summary"
+    | "human_approval"
     | "custom";
   title: string;
   summary?: string;
@@ -141,6 +149,25 @@ export interface Artifact {
   security_classification?: "public" | "internal" | "restricted";
   version: number;
   created_at: string;
+}
+
+export interface ApprovalRequest {
+  schema_version: "v1alpha1";
+  approval_id: string;
+  taskpack_id: string;
+  policy_id?: string;
+  requested_by: ActorRef;
+  reason: string;
+  required_approvals: number;
+  approvals?: {
+    actor: ActorRef;
+    decision: "approved" | "rejected";
+    reason?: string;
+    decided_at: string;
+  }[];
+  status: "pending" | "approved" | "rejected" | "canceled";
+  created_at: string;
+  decided_at?: string;
 }
 
 export interface PromotionRecord {
@@ -198,4 +225,90 @@ export interface DRIBinding {
   };
   status: "assigned" | "accepted" | "in_progress" | "blocked" | "completed" | "canceled";
   created_at: string;
+}
+
+export interface WorkspaceConstitution {
+  schema_version: "v1alpha1";
+  workspace: string;
+  mission: string;
+  defaults: {
+    max_runtime_minutes: number;
+    max_cost_usd: number;
+    context_budget_tokens: number;
+  };
+  task_sources?: {
+    type:
+      | "local"
+      | "github_issues"
+      | "ci_failure"
+      | "linear"
+      | "jira"
+      | "slack"
+      | "paperclip"
+      | "openfang"
+      | "openclaw"
+      | "custom";
+    repo?: string;
+    query?: string;
+    path?: string;
+  }[];
+  scope: {
+    writable?: string[];
+    forbidden?: string[];
+  };
+  approval_rules?: {
+    when:
+      | "touches_forbidden_path"
+      | "runs_destructive_command"
+      | "changes_auth_or_payments"
+      | "pushes_to_main"
+      | "external_api_call"
+      | "secret_access"
+      | "dependency_install"
+      | "production_access"
+      | "custom";
+    require: "human" | "reviewer" | "owner" | "deny";
+  }[];
+  success_criteria?: string[];
+  escalation?: {
+    default_owner?: string;
+    channels?: {
+      type: string;
+    }[];
+  };
+}
+
+export interface ContextPack {
+  schema_version: "v1alpha1";
+  mandate_id: string;
+  role: string;
+  budget_tokens: number;
+  must_read?: string[];
+  may_read?: string[];
+  may_write?: string[];
+  forbidden?: string[];
+  summary: string;
+  proof_required?: string[];
+  omitted_reasons?: string[];
+}
+
+export interface PreflightDecision {
+  schema_version: "v1alpha1";
+  mandate_id: string;
+  action:
+    | "read"
+    | "write"
+    | "run"
+    | "network"
+    | "secret"
+    | "git_push"
+    | "dependency_install"
+    | "prod_access"
+    | "custom";
+  path?: string;
+  command?: string;
+  decision: "allow" | "deny" | "needs_approval" | "needs_handoff";
+  reason: string;
+  approval_required: boolean;
+  matched_rules?: string[];
 }

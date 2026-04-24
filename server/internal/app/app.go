@@ -7,16 +7,16 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/guild-labs/guild/server/internal/artifacts"
-	"github.com/guild-labs/guild/server/internal/bootstrap"
-	"github.com/guild-labs/guild/server/internal/config"
-	"github.com/guild-labs/guild/server/internal/dri"
-	"github.com/guild-labs/guild/server/internal/evaluator"
-	"github.com/guild-labs/guild/server/internal/httpapi"
-	"github.com/guild-labs/guild/server/internal/institution"
-	"github.com/guild-labs/guild/server/internal/promotions"
-	"github.com/guild-labs/guild/server/internal/storage"
-	"github.com/guild-labs/guild/server/internal/tasks"
+	"github.com/lucid-fdn/guild/server/internal/artifacts"
+	"github.com/lucid-fdn/guild/server/internal/bootstrap"
+	"github.com/lucid-fdn/guild/server/internal/config"
+	"github.com/lucid-fdn/guild/server/internal/dri"
+	"github.com/lucid-fdn/guild/server/internal/evaluator"
+	"github.com/lucid-fdn/guild/server/internal/httpapi"
+	"github.com/lucid-fdn/guild/server/internal/institution"
+	"github.com/lucid-fdn/guild/server/internal/promotions"
+	"github.com/lucid-fdn/guild/server/internal/storage"
+	"github.com/lucid-fdn/guild/server/internal/tasks"
 )
 
 type App struct {

@@ -4,12 +4,16 @@
 
 Package: `@guild/adapter-mcp`
 
-This adapter translates Guild concepts into MCP-aware environments where appropriate.
+This package exposes Guild AgentDesk to MCP-aware environments.
+It includes both reusable MCP tool definitions and an executable local MCP server that wraps a repo's `agentdesk.yaml` and `.agentdesk/` directory.
+
+For copy-paste Claude, Codex, OpenFang, OpenClaw, and generic MCP host configs, see [MCP Setup](../../docs/MCP_SETUP.md).
 
 Responsibilities:
 
-- expose selected Guild operations to MCP-aware hosts
-- map MCP tool activity into Guild traces
+- expose selected AgentDesk operations to MCP-aware hosts
+- let agents fetch, claim, verify, close, and replay mandates without a hosted service
+- map MCP tool activity into Guild proof and replay records
 - keep permission and approval semantics explicit
 
 The adapter should avoid inventing new MCP semantics when existing host behavior is sufficient.
@@ -20,21 +24,67 @@ Minimum compatibility target:
 go run ./cli/cmd/guild conformance --base-url http://localhost:8080
 ```
 
-The adapter is considered useful only when it can create valid `Taskpack`s, publish valid `Artifact`s, and preserve Guild's DRI and approval semantics instead of hiding them inside tool-call transcripts.
+The adapter is considered useful only when it can create valid mandates, compile bounded context, check preflight decisions, publish proof `Artifact`s, and preserve Guild's DRI and approval semantics instead of hiding them inside tool-call transcripts.
+
+## Executable Local Server
+
+Run from a workspace that has already been initialized with `guild agentdesk init`:
+
+```bash
+corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+```
+
+Example host configuration:
+
+```json
+{
+  "mcpServers": {
+    "guild-agentdesk": {
+      "command": "guild-agentdesk-mcp",
+      "env": {
+        "GUILD_CLI": "guild"
+      }
+    }
+  }
+}
+```
+
+Useful environment variables:
+
+- `GUILD_CLI`: command used to invoke the Guild CLI, for example `guild` or `go run /path/to/guild/cli/cmd/guild`
+- `GUILD_AGENTDESK_SOURCE`: set to `github` to pull mandates from GitHub Issues
+- `GITHUB_TOKEN`: token used by the GitHub source adapter
+- `GITHUB_REPOSITORY`: default `owner/repo` for GitHub source ingestion
+
+The server speaks JSON-RPC over MCP stdio frames and implements:
+
+- `initialize`
+- `tools/list`
+- `tools/call`
 
 ## What Ships
 
 The v1 alpha bridge exports:
 
 - `guildMcpTools`: closed JSON-schema tool definitions for MCP-style hosts
-- `GuildMcpBridge`: a handler that dispatches tool calls into the Guild control plane
+- `GuildMcpBridge`: a handler that dispatches tool calls into a Guild-compatible client
 - `createGuildMcpBridge(client)`: convenience factory for host integration
+- `LocalAgentDeskClient`: a CLI-backed client for `agentdesk.yaml` and `.agentdesk/`
+- `guild-agentdesk-mcp`: an executable local MCP server
 
 Supported tools:
 
+- `guild_get_next_mandate`
+- `guild_claim_mandate`
 - `guild_create_taskpack`
 - `guild_assign_dri`
 - `guild_publish_artifact`
+- `guild_compile_context`
+- `guild_check_preflight`
+- `guild_request_approval`
+- `guild_create_handoff`
+- `guild_verify_mandate`
+- `guild_close_mandate`
 - `guild_export_replay_bundle`
 
 Run checks:

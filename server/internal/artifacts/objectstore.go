@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/guild-labs/guild/pkg/spec"
+	"github.com/lucid-fdn/guild/pkg/spec"
 )
 
 type LocalObjectStore struct {

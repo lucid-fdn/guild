@@ -3,12 +3,12 @@ package evaluator
 import (
 	"testing"
 
-	"github.com/guild-labs/guild/pkg/spec"
-	"github.com/guild-labs/guild/server/internal/artifacts"
-	"github.com/guild-labs/guild/server/internal/dri"
-	"github.com/guild-labs/guild/server/internal/promotions"
-	"github.com/guild-labs/guild/server/internal/storage"
-	"github.com/guild-labs/guild/server/internal/tasks"
+	"github.com/lucid-fdn/guild/pkg/spec"
+	"github.com/lucid-fdn/guild/server/internal/artifacts"
+	"github.com/lucid-fdn/guild/server/internal/dri"
+	"github.com/lucid-fdn/guild/server/internal/promotions"
+	"github.com/lucid-fdn/guild/server/internal/storage"
+	"github.com/lucid-fdn/guild/server/internal/tasks"
 )
 
 func TestEvaluationJobRunsReplaySuiteAndCreatesPromotionCandidate(t *testing.T) {

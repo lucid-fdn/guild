@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/guild-labs/guild/pkg/spec"
-	specvalidate "github.com/guild-labs/guild/pkg/spec/validate"
+	"github.com/lucid-fdn/guild/pkg/spec"
+	specvalidate "github.com/lucid-fdn/guild/pkg/spec/validate"
 )
 
 const usage = `Guild CLI
@@ -26,6 +26,17 @@ Usage:
   guild replay-export --base-url http://localhost:8080 --taskpack-id <uuid> [--file replay.json]
   guild replay-suite --base-url http://localhost:8080 --suite examples/replay-suite.example.json
   guild eval-submit --base-url http://localhost:8080 --suite examples/replay-suite.example.json [--wait]
+  guild agentdesk init
+  guild agentdesk mandate create "Fix failing auth tests"
+  guild agentdesk next
+  guild agentdesk preflight --id <uuid> --action write --path src/auth/login.ts
+  guild agentdesk context compile --id <uuid> --role coder
+  guild agentdesk approval request --id <uuid> --reason "Need owner consent"
+  guild agentdesk proof add --id <uuid> --kind test_report --path test-results.xml
+  guild agentdesk handoff create --id <uuid> --to reviewer --summary "Ready for review"
+  guild agentdesk verify --id <uuid>
+  guild agentdesk close --id <uuid>
+  guild agentdesk replay export --id <uuid> [--file replay.json]
 
 Commands:
   validate      Validate one Guild spec object with strict decoding
@@ -33,6 +44,7 @@ Commands:
   replay-export Export a replay bundle for one taskpack
   replay-suite  Run a replay/evaluation suite and propose a promotion candidate
   eval-submit   Queue a replay/evaluation job through the control plane
+  agentdesk     Local-first mandate, preflight, proof, and replay workflow for agents
 `
 
 func main() {
@@ -59,6 +71,8 @@ func run(args []string, stdout, stderr io.Writer) error {
 		return runReplaySuite(args[1:], stdout)
 	case "eval-submit":
 		return runEvalSubmit(args[1:], stdout)
+	case "agentdesk":
+		return runAgentDesk(args[1:], stdout, stderr)
 	case "help", "-h", "--help":
 		fmt.Fprint(stdout, usage)
 		return nil
@@ -420,6 +434,24 @@ func validateObject(kind string, data []byte) error {
 			return err
 		}
 		return specvalidate.ReplayBundle(payload)
+	case "workspace-constitution":
+		var payload spec.WorkspaceConstitution
+		if err := decodeStrict(data, &payload); err != nil {
+			return err
+		}
+		return specvalidate.WorkspaceConstitution(payload)
+	case "context-pack":
+		var payload spec.ContextPack
+		if err := decodeStrict(data, &payload); err != nil {
+			return err
+		}
+		return specvalidate.ContextPack(payload)
+	case "preflight-decision":
+		var payload spec.PreflightDecision
+		if err := decodeStrict(data, &payload); err != nil {
+			return err
+		}
+		return specvalidate.PreflightDecision(payload)
 	default:
 		return fmt.Errorf("unsupported kind %q", kind)
 	}

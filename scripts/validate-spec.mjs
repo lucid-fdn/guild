@@ -20,6 +20,9 @@ const pairs = [
   ["spec/promotion-gate.schema.json", "server/internal/bootstrap/fixtures/promotion-gate.json"],
   ["spec/commons-entry.schema.json", "server/internal/bootstrap/fixtures/commons-entry.json"],
   ["spec/replay-bundle.schema.json", "spec/examples/replay-bundle.example.json"],
+  ["spec/workspace-constitution.schema.json", "spec/examples/workspace-constitution.example.json"],
+  ["spec/context-pack.schema.json", "spec/examples/context-pack.example.json"],
+  ["spec/preflight-decision.schema.json", "spec/examples/preflight-decision.example.json"],
   ["spec/taskpack.schema.json", "server/internal/bootstrap/fixtures/taskpack.json"],
   ["spec/dri-binding.schema.json", "server/internal/bootstrap/fixtures/dri-binding.json"],
   ["spec/artifact.schema.json", "server/internal/bootstrap/fixtures/artifact.json"],
@@ -53,6 +56,9 @@ for (const schemaPath of [
   "spec/approval-request.schema.json",
   "spec/promotion-gate.schema.json",
   "spec/commons-entry.schema.json",
+  "spec/workspace-constitution.schema.json",
+  "spec/context-pack.schema.json",
+  "spec/preflight-decision.schema.json",
 ]) {
   const schema = await readJSON(schemaPath);
   ajv.addSchema(schema, path.basename(schemaPath));

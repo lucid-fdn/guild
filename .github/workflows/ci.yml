@@ -50,6 +50,9 @@ jobs:
       - run: go run ./cli/cmd/guild validate --kind approval-request --file spec/examples/approval-request.example.json
       - run: go run ./cli/cmd/guild validate --kind promotion-gate --file spec/examples/promotion-gate.example.json
       - run: go run ./cli/cmd/guild validate --kind commons-entry --file spec/examples/commons-entry.example.json
+      - run: go run ./cli/cmd/guild validate --kind workspace-constitution --file spec/examples/workspace-constitution.example.json
+      - run: go run ./cli/cmd/guild validate --kind context-pack --file spec/examples/context-pack.example.json
+      - run: go run ./cli/cmd/guild validate --kind preflight-decision --file spec/examples/preflight-decision.example.json
       - run: ./scripts/smoke.sh
       - run: ./scripts/e2e.sh
       - run: ./scripts/simulation.sh

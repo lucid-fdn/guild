@@ -2,14 +2,18 @@ import type { Artifact, DriBinding, PromotionRecord, ReplayBundle, Taskpack } fr
 
 export type {
   ActorRef,
+  ApprovalRequest,
   Artifact,
   ArtifactRef,
+  ContextPack,
   DriBinding,
   Labels,
   MetricDelta,
+  PreflightDecision,
   PromotionRecord,
   ReplayBundle,
-  Taskpack
+  Taskpack,
+  WorkspaceConstitution
 } from "./spec";
 
 export type GuildStatus = {

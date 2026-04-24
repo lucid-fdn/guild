@@ -57,6 +57,9 @@ validate-examples:
 	go run ./cli/cmd/guild validate --kind promotion-gate --file spec/examples/promotion-gate.example.json
 	go run ./cli/cmd/guild validate --kind commons-entry --file spec/examples/commons-entry.example.json
 	go run ./cli/cmd/guild validate --kind replay-bundle --file spec/examples/replay-bundle.example.json
+	go run ./cli/cmd/guild validate --kind workspace-constitution --file spec/examples/workspace-constitution.example.json
+	go run ./cli/cmd/guild validate --kind context-pack --file spec/examples/context-pack.example.json
+	go run ./cli/cmd/guild validate --kind preflight-decision --file spec/examples/preflight-decision.example.json
 
 test-go:
 	go test ./...

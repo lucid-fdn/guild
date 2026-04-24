@@ -2,7 +2,7 @@
   "name": "guild",
   "private": true,
   "version": "0.1.0",
-  "description": "The orchestrator-agnostic institution layer for AI teams.",
+  "description": "Agent-first work contracts: mandates, claims, proof, and replay.",
   "packageManager": "pnpm@10.8.0",
   "scripts": {
     "check:typescript-spec": "node scripts/generate-typescript-spec.mjs --check",

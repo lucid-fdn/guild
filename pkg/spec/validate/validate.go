@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/guild-labs/guild/pkg/spec"
+	"github.com/lucid-fdn/guild/pkg/spec"
 )
 
 const schemaVersion = "v1alpha1"
@@ -90,7 +90,7 @@ func Artifact(a spec.Artifact) error {
 		return errors.New("artifact_id must be a UUID")
 	case !IsUUID(a.TaskpackID):
 		return errors.New("taskpack_id must be a UUID")
-	case !inSet(a.Kind, "report", "code_patch", "review", "plan", "dataset", "decision_log", "benchmark_result", "skill_candidate", "custom"):
+	case !inSet(a.Kind, "report", "code_patch", "review", "plan", "dataset", "decision_log", "benchmark_result", "skill_candidate", "test_report", "diff", "changed_files", "screenshot", "log_excerpt", "security_review", "handoff_summary", "human_approval", "custom"):
 		return errors.New("kind is invalid")
 	case strings.TrimSpace(a.Title) == "":
 		return errors.New("title is required")
@@ -370,6 +370,78 @@ func ReplayBundle(bundle spec.ReplayBundle) error {
 		}
 	}
 	return nil
+}
+
+func WorkspaceConstitution(config spec.WorkspaceConstitution) error {
+	switch {
+	case config.SchemaVersion != schemaVersion:
+		return fmt.Errorf("version must be %q", schemaVersion)
+	case strings.TrimSpace(config.Workspace) == "":
+		return errors.New("workspace is required")
+	case strings.TrimSpace(config.Mission) == "":
+		return errors.New("mission is required")
+	case config.Defaults.MaxRuntimeMinutes < 1:
+		return errors.New("defaults.max_runtime_minutes must be >= 1")
+	case config.Defaults.MaxCostUSD < 0:
+		return errors.New("defaults.max_cost_usd must be >= 0")
+	case config.Defaults.ContextBudgetTokens < 256:
+		return errors.New("defaults.context_budget_tokens must be >= 256")
+	default:
+		for i, source := range config.TaskSources {
+			if !inSet(source.Type, "local", "github_issues", "ci_failure", "linear", "jira", "slack", "paperclip", "openfang", "openclaw", "custom") {
+				return fmt.Errorf("task_sources[%d].type is invalid", i)
+			}
+			if source.Type == "local" && strings.TrimSpace(source.Path) == "" {
+				return fmt.Errorf("task_sources[%d].path is required for local sources", i)
+			}
+			if source.Type == "github_issues" && strings.TrimSpace(source.Repo) == "" {
+				return fmt.Errorf("task_sources[%d].repo is required for github_issues sources", i)
+			}
+		}
+		for i, rule := range config.ApprovalRules {
+			if !inSet(rule.When, "touches_forbidden_path", "runs_destructive_command", "changes_auth_or_payments", "pushes_to_main", "external_api_call", "secret_access", "dependency_install", "production_access", "custom") {
+				return fmt.Errorf("approval_rules[%d].when is invalid", i)
+			}
+			if !inSet(rule.Require, "human", "reviewer", "owner", "deny") {
+				return fmt.Errorf("approval_rules[%d].require is invalid", i)
+			}
+		}
+		return nil
+	}
+}
+
+func ContextPack(pack spec.ContextPack) error {
+	switch {
+	case pack.SchemaVersion != schemaVersion:
+		return fmt.Errorf("schema_version must be %q", schemaVersion)
+	case !IsUUID(pack.MandateID):
+		return errors.New("mandate_id must be a UUID")
+	case strings.TrimSpace(pack.Role) == "":
+		return errors.New("role is required")
+	case pack.BudgetTokens < 256:
+		return errors.New("budget_tokens must be >= 256")
+	case strings.TrimSpace(pack.Summary) == "":
+		return errors.New("summary is required")
+	default:
+		return nil
+	}
+}
+
+func PreflightDecision(decision spec.PreflightDecision) error {
+	switch {
+	case decision.SchemaVersion != schemaVersion:
+		return fmt.Errorf("schema_version must be %q", schemaVersion)
+	case !IsUUID(decision.MandateID):
+		return errors.New("mandate_id must be a UUID")
+	case !inSet(decision.Action, "read", "write", "run", "network", "secret", "git_push", "dependency_install", "prod_access", "custom"):
+		return errors.New("action is invalid")
+	case !inSet(decision.Decision, "allow", "deny", "needs_approval", "needs_handoff"):
+		return errors.New("decision is invalid")
+	case strings.TrimSpace(decision.Reason) == "":
+		return errors.New("reason is required")
+	default:
+		return nil
+	}
 }
 
 func IsUUID(value string) bool {

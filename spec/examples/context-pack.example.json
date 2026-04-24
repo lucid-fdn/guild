@@ -1,0 +1,30 @@
+{
+  "schema_version": "v1alpha1",
+  "mandate_id": "4e1fe00c-6303-453c-8cb6-2c34f84896e4",
+  "role": "coder",
+  "budget_tokens": 12000,
+  "must_read": [
+    "tests/auth/login.test.ts",
+    "src/auth/login.ts"
+  ],
+  "may_read": [
+    "docs/auth.md"
+  ],
+  "may_write": [
+    "src/**",
+    "tests/**"
+  ],
+  "forbidden": [
+    ".env",
+    "infra/prod/**"
+  ],
+  "summary": "Fix auth test failures without changing production secrets.",
+  "proof_required": [
+    "test_report",
+    "changed_files",
+    "handoff_summary"
+  ],
+  "omitted_reasons": [
+    "Full transcript omitted by policy; artifacts are referenced first."
+  ]
+}

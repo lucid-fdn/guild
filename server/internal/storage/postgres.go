@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/guild-labs/guild/pkg/spec"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/lucid-fdn/guild/pkg/spec"
 )
 
 type PostgresStore struct {

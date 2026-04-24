@@ -248,6 +248,367 @@ func TestEvalSubmitQueuesAndRunsEvaluationJob(t *testing.T) {
 	}
 }
 
+func TestAgentDeskLocalWorkflow(t *testing.T) {
+	dir := t.TempDir()
+	restore := chdir(t, dir)
+	defer restore()
+
+	var stdout bytes.Buffer
+	if err := run([]string{"agentdesk", "init", "--workspace", "demo"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("init failed: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "agentdesk.yaml")); err != nil {
+		t.Fatal(err)
+	}
+
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "mandate", "create", "Fix failing auth tests", "--writable", "src/auth/**,tests/auth/**", "--priority", "high"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("mandate create failed: %v", err)
+	}
+	mandateID := strings.TrimSpace(strings.TrimPrefix(stdout.String(), "mandate-created "))
+	if mandateID == "" {
+		t.Fatalf("expected mandate id, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "next"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("next failed: %v", err)
+	}
+	var mandate map[string]any
+	if err := json.Unmarshal(stdout.Bytes(), &mandate); err != nil {
+		t.Fatal(err)
+	}
+	if mandate["taskpack_id"] != mandateID {
+		t.Fatalf("expected next mandate %s, got %v", mandateID, mandate["taskpack_id"])
+	}
+
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "preflight", "--id", mandateID, "--action", "write", "--path", "src/auth/login.ts"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("preflight allow failed: %v", err)
+	}
+	var allowDecision map[string]any
+	if err := json.Unmarshal(stdout.Bytes(), &allowDecision); err != nil {
+		t.Fatal(err)
+	}
+	if allowDecision["decision"] != "allow" {
+		t.Fatalf("expected allow decision, got %v", allowDecision["decision"])
+	}
+
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "preflight", "--id", mandateID, "--action", "write", "--path", ".env"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("preflight approval failed: %v", err)
+	}
+	var approvalDecision map[string]any
+	if err := json.Unmarshal(stdout.Bytes(), &approvalDecision); err != nil {
+		t.Fatal(err)
+	}
+	if approvalDecision["decision"] != "needs_approval" {
+		t.Fatalf("expected needs_approval, got %v", approvalDecision["decision"])
+	}
+
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "context", "compile", "--id", mandateID, "--role", "coder"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("context compile failed: %v", err)
+	}
+	var contextPack map[string]any
+	if err := json.Unmarshal(stdout.Bytes(), &contextPack); err != nil {
+		t.Fatal(err)
+	}
+	if contextPack["mandate_id"] != mandateID {
+		t.Fatalf("expected context for %s, got %v", mandateID, contextPack["mandate_id"])
+	}
+
+	proofFile := filepath.Join(dir, "test-results.xml")
+	if err := os.WriteFile(proofFile, []byte("<testsuite failures=\"0\"></testsuite>\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "proof", "add", "--id", mandateID, "--kind", "test_report", "--path", proofFile}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("proof add failed: %v", err)
+	}
+	if !strings.Contains(stdout.String(), "proof-added") {
+		t.Fatalf("expected proof-added, got %q", stdout.String())
+	}
+
+	changedFiles := filepath.Join(dir, "changed-files.json")
+	if err := os.WriteFile(changedFiles, []byte(`["src/auth/login.ts"]`+"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "proof", "add", "--id", mandateID, "--kind", "changed_files", "--path", changedFiles}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("changed files proof add failed: %v", err)
+	}
+
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "approval", "request", "--id", mandateID, "--reason", "Need reviewer consent for auth fixture update"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("approval request failed: %v", err)
+	}
+	approvalID := strings.TrimSpace(strings.TrimPrefix(stdout.String(), "approval-requested "))
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "verify", "--id", mandateID}, &stdout, ioDiscard()); err == nil {
+		t.Fatal("expected verify to fail with pending approval and missing handoff")
+	}
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "approval", "resolve", "--approval-id", approvalID, "--decision", "approved"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("approval resolve failed: %v", err)
+	}
+	if !strings.Contains(stdout.String(), "approval-approved") {
+		t.Fatalf("expected approval-approved, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "handoff", "create", "--id", mandateID, "--to", "reviewer", "--summary", "Auth tests are green and ready for review."}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("handoff create failed: %v", err)
+	}
+	if !strings.Contains(stdout.String(), "handoff-created") {
+		t.Fatalf("expected handoff-created, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "verify", "--id", mandateID}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("verify failed: %v output=%s", err, stdout.String())
+	}
+	var verify map[string]any
+	if err := json.Unmarshal(stdout.Bytes(), &verify); err != nil {
+		t.Fatal(err)
+	}
+	if verify["ready"] != true {
+		t.Fatalf("expected verify ready, got %v", verify["ready"])
+	}
+
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "close", "--id", mandateID}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("close failed: %v", err)
+	}
+	if !strings.Contains(stdout.String(), "mandate-closed") {
+		t.Fatalf("expected mandate-closed, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "replay", "export", "--id", mandateID}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("replay export failed: %v", err)
+	}
+	var replay map[string]any
+	if err := json.Unmarshal(stdout.Bytes(), &replay); err != nil {
+		t.Fatal(err)
+	}
+	if replay["root_taskpack_id"] != mandateID {
+		t.Fatalf("expected replay root %s, got %v", mandateID, replay["root_taskpack_id"])
+	}
+}
+
+func TestAgentDeskCloseRequiresProof(t *testing.T) {
+	dir := t.TempDir()
+	restore := chdir(t, dir)
+	defer restore()
+
+	if err := run([]string{"agentdesk", "init"}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("init failed: %v", err)
+	}
+	var stdout bytes.Buffer
+	if err := run([]string{"agentdesk", "mandate", "create", "Write docs"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("mandate create failed: %v", err)
+	}
+	mandateID := strings.TrimSpace(strings.TrimPrefix(stdout.String(), "mandate-created "))
+	err := run([]string{"agentdesk", "close", "--id", mandateID}, ioDiscard(), ioDiscard())
+	if err == nil {
+		t.Fatal("expected close to require proof")
+	}
+	if !strings.Contains(err.Error(), "without at least one proof") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestAgentDeskClaimSkipsClaimedMandates(t *testing.T) {
+	dir := t.TempDir()
+	restore := chdir(t, dir)
+	defer restore()
+
+	if err := run([]string{"agentdesk", "init"}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("init failed: %v", err)
+	}
+	var stdout bytes.Buffer
+	if err := run([]string{"agentdesk", "mandate", "create", "First task", "--priority", "high"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("first create failed: %v", err)
+	}
+	firstID := strings.TrimSpace(strings.TrimPrefix(stdout.String(), "mandate-created "))
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "mandate", "create", "Second task", "--priority", "medium"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("second create failed: %v", err)
+	}
+	secondID := strings.TrimSpace(strings.TrimPrefix(stdout.String(), "mandate-created "))
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "claim", "--id", firstID, "--agent", "codex", "--ttl-minutes", "30"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("claim failed: %v", err)
+	}
+	var claim map[string]any
+	if err := json.Unmarshal(stdout.Bytes(), &claim); err != nil {
+		t.Fatal(err)
+	}
+	if claim["agent"] != "codex" {
+		t.Fatalf("expected codex claim, got %v", claim["agent"])
+	}
+	err := run([]string{"agentdesk", "claim", "--id", firstID, "--agent", "other"}, ioDiscard(), ioDiscard())
+	if err == nil {
+		t.Fatal("expected duplicate claim to fail")
+	}
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "next"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("next failed: %v", err)
+	}
+	var mandate map[string]any
+	if err := json.Unmarshal(stdout.Bytes(), &mandate); err != nil {
+		t.Fatal(err)
+	}
+	if mandate["taskpack_id"] != secondID {
+		t.Fatalf("expected unclaimed second mandate %s, got %v", secondID, mandate["taskpack_id"])
+	}
+}
+
+func TestAgentDeskNextFromGitHubIssuesCreatesMandate(t *testing.T) {
+	dir := t.TempDir()
+	restore := chdir(t, dir)
+	defer restore()
+
+	var requestedPath string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestedPath = r.URL.Path
+		if r.URL.Path != "/search/issues" {
+			http.NotFound(w, r)
+			return
+		}
+		if !strings.Contains(r.URL.Query().Get("q"), "repo:lucid-fdn/app") {
+			t.Fatalf("expected repo query, got %q", r.URL.Query().Get("q"))
+		}
+		writeTestJSON(t, w, map[string]any{
+			"items": []map[string]any{
+				{
+					"number":     184,
+					"title":      "Fix failing auth tests",
+					"body":       "Auth tests fail in CI after fixture drift.",
+					"html_url":   "https://github.com/lucid-fdn/app/issues/184",
+					"state":      "open",
+					"created_at": "2026-04-24T12:00:00Z",
+					"user": map[string]any{
+						"login": "quentin",
+					},
+					"labels": []map[string]any{
+						{"name": "agent:ready"},
+						{"name": "priority:p1"},
+						{"name": "scope:auth"},
+					},
+				},
+			},
+		})
+	}))
+	defer server.Close()
+
+	t.Setenv("GITHUB_API_URL", server.URL)
+	if err := run([]string{"agentdesk", "init", "--workspace", "demo"}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("init failed: %v", err)
+	}
+
+	var stdout bytes.Buffer
+	if err := run([]string{"agentdesk", "next", "--source", "github", "--repo", "lucid-fdn/app", "--query", "label:agent:ready state:open"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("github next failed: %v", err)
+	}
+	if requestedPath != "/search/issues" {
+		t.Fatalf("expected GitHub search request, got %q", requestedPath)
+	}
+	var mandate map[string]any
+	if err := json.Unmarshal(stdout.Bytes(), &mandate); err != nil {
+		t.Fatal(err)
+	}
+	if mandate["title"] != "Fix failing auth tests" {
+		t.Fatalf("unexpected title %v", mandate["title"])
+	}
+	if mandate["priority"] != "high" {
+		t.Fatalf("expected priority high, got %v", mandate["priority"])
+	}
+	permissions := mandate["permissions"].(map[string]any)
+	scopes := permissions["scopes"].([]any)
+	if !containsAny(scopes, "auth/**") {
+		t.Fatalf("expected scope auth/**, got %v", scopes)
+	}
+}
+
+func TestAgentDeskVerifyPublishesGitHubReport(t *testing.T) {
+	dir := t.TempDir()
+	restore := chdir(t, dir)
+	defer restore()
+
+	var commentBody string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost || r.URL.Path != "/repos/lucid-fdn/app/issues/12/comments" {
+			http.NotFound(w, r)
+			return
+		}
+		var payload map[string]string
+		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+			t.Fatal(err)
+		}
+		commentBody = payload["body"]
+		w.WriteHeader(http.StatusCreated)
+		writeTestJSON(t, w, map[string]any{"id": 1})
+	}))
+	defer server.Close()
+
+	t.Setenv("GITHUB_API_URL", server.URL)
+	t.Setenv("GITHUB_TOKEN", "test-token")
+	t.Setenv("GITHUB_REPOSITORY", "lucid-fdn/app")
+	t.Setenv("GITHUB_PR_NUMBER", "12")
+	summaryPath := filepath.Join(dir, "summary.md")
+	t.Setenv("GITHUB_STEP_SUMMARY", summaryPath)
+
+	if err := run([]string{"agentdesk", "init", "--workspace", "demo"}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("init failed: %v", err)
+	}
+	var stdout bytes.Buffer
+	if err := run([]string{"agentdesk", "mandate", "create", "Fix failing auth tests", "--writable", "src/auth/**,tests/auth/**"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("mandate create failed: %v", err)
+	}
+	mandateID := strings.TrimSpace(strings.TrimPrefix(stdout.String(), "mandate-created "))
+	testReport := filepath.Join(dir, "test-results.xml")
+	changedFiles := filepath.Join(dir, "changed-files.json")
+	if err := os.WriteFile(testReport, []byte("<testsuite failures=\"0\"></testsuite>\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(changedFiles, []byte(`["src/auth/login.ts"]`+"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := run([]string{"agentdesk", "proof", "add", "--id", mandateID, "--kind", "test_report", "--path", testReport}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("proof add failed: %v", err)
+	}
+	if err := run([]string{"agentdesk", "proof", "add", "--id", mandateID, "--kind", "changed_files", "--path", changedFiles}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("changed files proof failed: %v", err)
+	}
+	if err := run([]string{"agentdesk", "handoff", "create", "--id", mandateID, "--to", "reviewer", "--summary", "Ready for review."}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("handoff failed: %v", err)
+	}
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "verify", "--id", mandateID, "--github-report", "--replay-file", ".agentdesk/replay/replay.json"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("verify failed: %v output=%s", err, stdout.String())
+	}
+	summary, err := os.ReadFile(summaryPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, haystack := range []string{string(summary), commentBody} {
+		if !strings.Contains(haystack, "Agent Work Contract: passed") {
+			t.Fatalf("expected passed report, got %q", haystack)
+		}
+		if !strings.Contains(haystack, "Proof: test_report") {
+			t.Fatalf("expected proof summary, got %q", haystack)
+		}
+		if !strings.Contains(haystack, "Approvals: resolved") {
+			t.Fatalf("expected approvals resolved, got %q", haystack)
+		}
+		if !strings.Contains(haystack, "Replay: attached") {
+			t.Fatalf("expected replay attached, got %q", haystack)
+		}
+	}
+}
+
 func newConformanceServer(t *testing.T) *httptest.Server {
 	t.Helper()
 	mux := http.NewServeMux()
@@ -321,4 +682,29 @@ func writeTestJSON(t *testing.T, w http.ResponseWriter, payload any) {
 
 func ioDiscard() *bytes.Buffer {
 	return &bytes.Buffer{}
+}
+
+func chdir(t *testing.T, dir string) func() {
+	t.Helper()
+	previous, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(dir); err != nil {
+		t.Fatal(err)
+	}
+	return func() {
+		if err := os.Chdir(previous); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func containsAny(values []any, want string) bool {
+	for _, value := range values {
+		if value == want {
+			return true
+		}
+	}
+	return false
 }

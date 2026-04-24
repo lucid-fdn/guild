@@ -2,7 +2,7 @@
 
 This guide gets Guild running locally and walks through the core story:
 
-One task. One DRI. Durable artifacts. Replay. Human-approved learning. Commons.
+Every agent run starts with a mandate and ends with proof.
 
 ## Prerequisites
 
@@ -17,7 +17,26 @@ corepack enable
 make install
 ```
 
-## Run The Control Plane
+## Run AgentDesk Locally
+
+AgentDesk is the fastest path because it does not require a server.
+It stores the work contract in `agentdesk.yaml` and `.agentdesk/`.
+
+```bash
+go run ./cli/cmd/guild agentdesk init
+go run ./cli/cmd/guild agentdesk mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
+go run ./cli/cmd/guild agentdesk next
+go run ./cli/cmd/guild agentdesk claim --id <mandate-id> --agent codex
+go run ./cli/cmd/guild agentdesk context compile --id <mandate-id> --role coder
+go run ./cli/cmd/guild agentdesk preflight --id <mandate-id> --action write --path src/auth/login.ts
+go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
+go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind changed_files --path changed-files.json
+go run ./cli/cmd/guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+go run ./cli/cmd/guild agentdesk verify --id <mandate-id>
+go run ./cli/cmd/guild agentdesk replay export --id <mandate-id>
+```
+
+## Run The Shared API
 
 ```bash
 make run-server
@@ -30,7 +49,7 @@ curl -fsS http://localhost:8080/healthz
 curl -fsS http://localhost:8080/api/v1/status
 ```
 
-The bootstrap server starts with seeded data for the canonical Guild story.
+The bootstrap server starts with seeded data for the longer replay, approval, promotion, and commons story.
 
 ## Open The Experience Plane
 
@@ -96,4 +115,3 @@ make release-check
 ```
 
 That command validates specs, OpenAPI, docs, fixtures, SDKs, adapters, the UI build, smoke, e2e, and the full simulation.
-

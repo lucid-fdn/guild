@@ -12,6 +12,7 @@ Accepted
 
 Guild needs to be:
 
+- agent-first: every run starts with a mandate and ends with proof
 - orchestrator-agnostic
 - scalable under bounded multi-agent workloads
 - performant on control-plane operations
@@ -19,7 +20,7 @@ Guild needs to be:
 - practical to self-host
 
 The project must avoid becoming a new agent runtime.
-It must sit above runtimes and standardize institutional primitives.
+It must sit above runtimes and standardize work-contract primitives first, then institutional/commons primitives after the agent workflow is useful.
 
 ## Decision
 
@@ -30,6 +31,7 @@ Guild v1 will be built as:
 - a TypeScript UI and primary SDK
 - a Python SDK for ecosystem reach
 - a single deployable backend for v1, with modular internal boundaries
+- a local AgentDesk workflow and executable MCP server as the primary adoption path
 
 ## Why
 
@@ -102,6 +104,7 @@ Guild v1 has four planes:
 - A2A bridge
 - context compilation
 - artifact IO
+- institutional memory routing
 
 ### 4. Learning Plane
 
@@ -211,8 +214,14 @@ Instead:
 - task context is compiled from structured inputs
 - artifacts are referenced before content is hydrated
 - role-specific payloads are generated per task
+- institutional memory is routed by mandate, office, visibility, tags, and provenance
+- agent-local scratchpads remain outside the canonical institutional record unless explicitly published as artifacts
 
 This is the only path that scales to large agent populations.
+
+Guild therefore owns institutional memory, not generic agent memory. The control plane keeps the registry of mandates, offices, records, approvals, replay evidence, commons entries, and promotion decisions. Vector stores, customer data stores, and decentralized archives remain pluggable backends.
+
+The default v1 memory stack is Postgres plus object storage. DePIN-style storage can be added later for public commons snapshots, tamper-evident records, and community-owned learnings, but it must not sit on the hot path for private task execution.
 
 ## Security Decisions
 
@@ -250,6 +259,10 @@ Rejected because it adds operational and cognitive overhead too early.
 ### Chat-first memory model
 
 Rejected because it does not scale and makes replay brittle.
+
+### DePIN-first memory model
+
+Rejected for v1 because hot-path agent context needs low latency, simple local development, and private-by-default storage. Decentralized storage remains a future backend for public commons and verifiable provenance.
 
 ## Follow-Up ADRs
 

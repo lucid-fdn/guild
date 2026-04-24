@@ -2,7 +2,22 @@
 
 ## Purpose
 
-This document turns the Guild thesis into a concrete build plan for a v1 product that is:
+This document turns the Guild thesis into a concrete build plan for a v1 product where every agent run starts with a mandate and ends with proof.
+
+The launch wedge is agent-first:
+
+- local `agentdesk.yaml` and `.agentdesk/`
+- mandate ingestion from local files and GitHub Issues
+- local claim leases
+- bounded context packs
+- preflight decisions
+- approvals only when policy requires them
+- proof artifacts
+- verification and replay
+
+The longer-term institution/commons layer builds on that contract after the operational workflow is useful.
+
+The product must remain:
 
 - orchestrator-agnostic
 - scalable
@@ -13,7 +28,7 @@ This document turns the Guild thesis into a concrete build plan for a v1 product
 
 ## Product Scope
 
-Guild v1 is the institution layer above orchestrators.
+Guild v1 is the agent work-contract layer above orchestrators.
 
 It standardizes and operationalizes:
 
@@ -22,7 +37,7 @@ It standardizes and operationalizes:
 - `Artifact`
 - `Promotion Record`
 
-Guild v1 ships a reference control plane and UI that make those objects useful in practice.
+Guild v1 ships a local AgentDesk workflow first, then a reference shared API and UI that make those objects useful for teams.
 
 ## Product Goals
 
@@ -424,7 +439,50 @@ API shape:
 - approval and replay workloads must be asynchronous
 - candidate extraction must never block task completion
 
-## Context Strategy
+## Institutional Memory And Context Routing
+
+Guild must ship institutional memory as part of the core project, but it must not become a generic "agent memory" product.
+
+The principle is:
+
+```text
+central registry, decentralized context
+```
+
+Guild stores the institutional record of work: identities, offices, mandates, artifacts, approvals, replay evidence, promotion decisions, commons entries, tags, and provenance. Agents keep their own local scratchpads and runtime memories. External stores keep large embeddings, documents, customer data, and decentralized public archives.
+
+Guild's responsibility is to route the right institutional context to the right agent at the right time.
+
+### Memory layers
+
+1. Agent local memory
+   - short-term reasoning context
+   - private scratchpad
+   - runtime-specific state
+
+2. Team/project memory
+   - active task artifacts
+   - known constraints
+   - dependency state
+   - project decisions
+
+3. Institutional memory
+   - mandates
+   - offices and DRI ownership
+   - public records
+   - approvals and consent
+   - replay/court records
+   - accepted commons entries
+   - promoted laws/canon
+
+4. External memory backends
+   - object storage
+   - Postgres
+   - vector databases
+   - customer data stores
+   - IPFS/Filecoin/Arweave for public commons snapshots later
+
+### Context compiler contract
 
 Guild must ship a context compiler contract even if the first implementation is thin.
 
@@ -436,6 +494,9 @@ Inputs:
 - permissions
 - relevant commons entries
 - project policy
+- agent/model/orchestrator provenance
+- visibility tags
+- context scope tags
 
 Outputs:
 
@@ -443,12 +504,29 @@ Outputs:
 - token budget
 - artifact hydration list
 - action policy
+- omitted-record reasons for auditability
 
 Rules:
 
 - artifact refs before transcript content
 - summaries are hints, not the source of truth
 - no implicit full-history dump
+- every context pack is role-specific and mandate-specific
+- private scratchpads are never promoted automatically
+- institutional records must be tagged by agent, office, model, orchestrator, mandate, visibility, and promotion status
+
+### DePIN and decentralized memory
+
+DePIN is an extension point, not the v1 hot path.
+
+Use decentralized storage later for:
+
+- public commons snapshots
+- tamper-evident institutional records
+- verifiable provenance
+- community-owned promoted learnings
+
+Do not put private traces or hot-path context retrieval on decentralized storage by default. The v1 architecture should keep Postgres/object storage fast and boring, while making artifact hashes and backend adapters compatible with public decentralized archives.
 
 ## Security Baseline
 

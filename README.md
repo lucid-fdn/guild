@@ -1,175 +1,222 @@
 # Guild
 
-Guild is the orchestrator-agnostic institution layer for AI teams.
+Every agent run starts with a mandate and ends with proof.
 
 ![Guild demo](launch/demo.gif)
 
-It sits above existing runtimes and frameworks and adds the primitives they are missing:
+Guild is an agent-first work contract for autonomous coding and research agents.
+It gives agents a local desk they can consume directly: one mandate, scoped context, preflight guardrails, explicit claims, proof artifacts, handoffs, verification, and replay.
 
-- `Taskpack`: a portable, bounded handoff format for agent work
-- `DRI`: one accountable owner per task
-- `Artifact`: durable, typed outputs instead of chat as the system of record
-- `Commons`: a governed library of promoted team learnings
-- `Promotion Gates`: replay and benchmark rules that decide what the institution learns
-- `Replay Bundle`: portable evidence for inspecting or evaluating a task run
+It is not another orchestrator.
+It works beside Codex, Claude, OpenClaw, OpenFang, LangGraph, CrewAI, OpenAI Agents SDK, GitHub Actions, and custom stacks.
 
-Guild is not another multi-agent orchestrator.
+## The Contract
 
-Guild does not ask teams to replace OpenFang, Hermes, LangGraph, CrewAI, OpenAI Agents SDK, or custom stacks.
-Guild gives those stacks ownership, institutional memory, review, replay, and collective learning.
+Agents should not start from a vague chat thread or a giant repo dump.
+They should start from a small, inspectable contract:
+
+- `Mandate`: the task, objective, allowed scope, budget, and acceptance criteria
+- `Claim`: a local lease so two agents do not take the same work
+- `Context Pack`: the smallest role-specific context needed to act
+- `Preflight Decision`: allow, deny, or request approval before risky actions
+- `Approval`: human consent when policy says the agent should stop and ask
+- `Proof Artifact`: tests, diffs, changed files, screenshots, logs, or handoff summaries
+- `Replay Bundle`: portable evidence of what happened and why it is done
+
+That is the wedge:
+
+```text
+GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proof -> verify -> replay
+```
 
 ## Start Here
 
-- Read the [Quickstart](docs/quickstart.md) to run Guild locally in minutes.
-- Run the canonical [one task, one DRI, commons example](examples/one-task-one-dri-commons/README.md).
-- Use `make simulation` to verify the full institution loop end-to-end.
-- Review the [launch assets](launch/README.md) for landing copy, demo script, starter issues, and the GIF.
-- Review the [brand narrative](docs/BRAND_NARRATIVE.md) for the `Polity` naming direction and civilization metaphor.
+- Run [AgentDesk](#agentdesk-local-agent-workflow) locally with no server.
+- Point agents at the executable [MCP server](adapters/mcp/README.md) with copy-paste [host setup](docs/MCP_SETUP.md).
+- Turn GitHub issues labeled `agent:ready` into mandates.
+- Use `agentdesk verify --github-report` as a PR check.
+- Run `make release-check` before shipping.
+- Read the [Agent-First Pivot Plan](docs/AGENT_FIRST_PIVOT_PLAN.md) for the product thesis.
 
-## Why Guild
+## Why This Exists
 
-Humans outperform through institutions, not just communication.
+The immediate agent pain is not “lack of another control plane.”
+It is that agents are asked to work without the operational basics humans rely on:
 
-The same pattern applies to AI teams:
+- What exactly am I allowed to change?
+- Who owns this task right now?
+- What context do I need, and what context should I ignore?
+- When must I stop for approval?
+- What proof makes the work complete?
+- How can another agent or reviewer replay what happened?
 
-- agents need clear ownership
-- handoffs need bounded context
-- important work needs durable artifacts
-- institutions improve by promoting proven behaviors, not by trusting every new idea
-
-The winning architecture is not "1,000 agents thinking together."
-It is "many agents coordinating through scoped work, ownership, review, and promoted knowledge."
-
-## Product Thesis
-
-Bring your own orchestrator.
-Guild adds structure, ownership, artifacts, and institutional memory.
-
-Core positioning:
-
-- MCP gives agents tools
-- A2A gives agents interoperability
-- AG-UI gives agents user-facing interactivity
-- Guild gives agents institutions
-
-## What Guild Standardizes
-
-Guild aims to make eight portable objects boring, stable, and reusable:
-
-1. `Taskpack`
-- objective
-- inputs
-- artifact references
-- constraints
-- permissions
-- context budget
-- acceptance criteria
-
-2. `DRI Binding`
-- one accountable owner
-- reviewers
-- specialists
-- approvers
-- escalation rules
-
-3. `Artifact`
-- typed output
-- provenance
-- lineage
-- evaluation status
-- storage location
-
-4. `Promotion Record`
-- candidate learning
-- evidence
-- benchmark result
-- acceptance or rejection
-
-5. `Governance Policy`
-- rules for risky actions
-- approval requirements
-- institution-level constraints
-
-6. `Approval Request`
-- human approval state
-- approver decisions
-- policy context
-
-7. `Promotion Gate`
-- required replay runs
-- required metric deltas
-- approval requirement
-
-8. `Commons Entry`
-- accepted institutional learning
-- artifact reference
-- scope and status
-
-Guild also defines `Replay Bundle` as the portable export format that packages a task, ownership, artifacts, and promotion evidence.
-
-## Design Principles
-
-- Orchestrator-agnostic from day one
-- Artifact-first, not chat-first
-- One task, one owner
-- Bounded fan-out
-- Learning off the hot path
-- Policy and approval built in
-- Spec-first before framework-specific convenience
-- Replayability as a first-class feature
-
-## Reference Architecture
-
-Guild has four planes:
-
-1. Experience Plane
-- approvals
-- replay
-- trace UI
-- task dashboards
-- commons browser
-
-2. Control Plane
-- task registry
-- DRI assignment
-- workflow state machine
-- policy engine
-- scheduler
-- approvals
-
-3. Execution Plane
-- orchestrator adapters
-- context compiler
-- model routing integration
-- MCP and A2A gateways
-
-4. Learning Plane
-- trace ingestion
-- candidate extraction
-- benchmark runner
-- promotion gates
-- commons registry
+Guild makes those answers machine-readable.
 
 ## What Guild Is Not
 
 - not a chatbot framework
-- not a new agent runtime
-- not a marketplace in v1
-- not a dense peer-to-peer swarm
-- not a full autonomous self-modifying institution in the hot path
+- not a swarm runtime
+- not a replacement for OpenFang, OpenClaw, LangGraph, CrewAI, or Codex
+- not a generic vector memory
+- not a human-managed kanban clone
+- not a mandatory hosted control plane
+
+Guild is the contract layer agents consume before, during, and after work.
+The long-term institution/commons layer is built on top of that contract, not ahead of it.
+
+## AgentDesk Local Agent Workflow
+
+AgentDesk is the zero-server path.
+It wraps `agentdesk.yaml` and `.agentdesk/` so agents can self-serve from a repo.
+
+```bash
+go run ./cli/cmd/guild agentdesk init
+go run ./cli/cmd/guild agentdesk mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
+go run ./cli/cmd/guild agentdesk next
+go run ./cli/cmd/guild agentdesk claim --id <mandate-id> --agent codex
+go run ./cli/cmd/guild agentdesk context compile --id <mandate-id> --role coder
+go run ./cli/cmd/guild agentdesk preflight --id <mandate-id> --action write --path src/auth/login.ts
+go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
+go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind changed_files --path changed-files.json
+go run ./cli/cmd/guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+go run ./cli/cmd/guild agentdesk verify --id <mandate-id>
+go run ./cli/cmd/guild agentdesk replay export --id <mandate-id>
+```
+
+Use GitHub Issues as the human task source:
+
+```yaml
+task_sources:
+  - type: github_issues
+    repo: lucid-fdn/app
+    query: "label:agent:ready state:open"
+```
+
+Then an agent can run:
+
+```bash
+GITHUB_TOKEN=... go run ./cli/cmd/guild agentdesk next --source github
+go run ./cli/cmd/guild agentdesk claim --id <mandate-id> --agent codex
+```
+
+Claims are local leases stored in `.agentdesk/claims/`.
+By default, `agentdesk next` skips actively claimed mandates so many agents can safely pull from the same desk.
+
+## MCP Server
+
+Guild ships an executable local MCP server for agent hosts.
+It exposes AgentDesk as tools backed by the repo's `agentdesk.yaml` and `.agentdesk/` directory.
+
+```bash
+go build -o bin/guild ./cli/cmd/guild
+GUILD_CLI="$(pwd)/bin/guild" \
+corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+```
+
+For Claude Desktop, Codex, OpenFang, OpenClaw, and generic MCP host configs, see [MCP Setup](docs/MCP_SETUP.md).
+
+Example MCP config:
+
+```json
+{
+  "mcpServers": {
+    "guild-agentdesk": {
+      "command": "corepack",
+      "args": ["pnpm", "--dir", "/absolute/path/to/guild/adapters/mcp", "exec", "guild-agentdesk-mcp"],
+      "env": {
+        "GUILD_CLI": "/absolute/path/to/guild/bin/guild"
+      }
+    }
+  }
+}
+```
+
+Main tools:
+
+- `guild_get_next_mandate`
+- `guild_claim_mandate`
+- `guild_compile_context`
+- `guild_check_preflight`
+- `guild_request_approval`
+- `guild_publish_artifact`
+- `guild_create_handoff`
+- `guild_verify_mandate`
+- `guild_close_mandate`
+- `guild_export_replay_bundle`
+
+## What Guild Standardizes
+
+Guild aims to make these portable objects boring, stable, and reusable:
+
+1. `Taskpack`
+- the mandate: objective, inputs, constraints, permissions, context budget, and acceptance criteria
+
+2. `DRI Binding`
+- one accountable owner plus reviewers, specialists, approvers, and escalation rules
+
+3. `Artifact`
+- typed proof output with provenance, lineage, evaluation status, and storage location
+
+4. `Workspace Constitution`
+- repo-local rules: scope, defaults, approval rules, task sources, and success criteria
+
+5. `Context Pack`
+- role-specific bounded context compiled from the mandate, scope, and artifact references
+
+6. `Preflight Decision`
+- allow, deny, or needs-approval result for a proposed agent action
+
+7. `Approval Request`
+- human approval state, approver decisions, and policy context
+
+8. `Replay Bundle`
+- portable evidence packaging the mandate, proof artifacts, ownership, approvals, and replay data
+
+9. `Promotion Record`, `Promotion Gate`, and `Commons Entry`
+- the later learning layer: accepted improvements only enter the commons after evidence and review
+
+## GitHub Actions
+
+Use `agentdesk verify --github-report` to turn the work contract into a CI/PR report:
+
+```bash
+go run ./cli/cmd/guild agentdesk replay export --id <mandate-id> --file .agentdesk/replay/replay.json
+go run ./cli/cmd/guild agentdesk verify --id <mandate-id> --github-report --replay-file .agentdesk/replay/replay.json
+```
+
+The report includes:
+
+```text
+Agent Work Contract: passed
+Mandate: ...
+Proof: test_report, changed_files, handoff_summary
+Approvals: resolved
+Replay: attached
+```
+
+## Design Principles
+
+- Agent-first before dashboard-first
+- Local-first before hosted-first
+- Orchestrator-agnostic from day one
+- Artifact-first, not transcript-first
+- One task, one owner, one active claim
+- Bounded context over shared gossip
+- Approvals before risky side effects
+- Replayability as a first-class feature
+- Learning and commons off the hot path
 
 ## Day 1 Demo
 
 The first demo should be legible in under 60 seconds:
 
-1. A user opens a task.
-2. Guild assigns one DRI and two support roles: reviewer and skeptic.
-3. The DRI delegates two narrow subtasks through `Taskpack`s.
-4. Each subtask produces typed artifacts.
-5. Guild shows the full trace, ownership tree, approvals, and artifacts.
-6. The run is replayed.
-7. A candidate learning is proposed and benchmarked.
-8. The learning is accepted into the commons only if it improves results.
+1. A GitHub issue labeled `agent:ready` becomes a mandate.
+2. An agent asks for the next mandate and claims it.
+3. Guild emits a bounded context pack and preflight decisions.
+4. The agent works in the allowed scope.
+5. The agent publishes test, changed-file, and handoff proof.
+6. `agentdesk verify` passes and writes a GitHub Actions report.
+7. A replay bundle shows exactly what happened.
 
 ## Standards Posture
 
@@ -181,7 +228,7 @@ Guild is designed to compose with:
 - [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/)
 
 Guild should avoid inventing new wire protocols when an existing one is good enough.
-Its job is to define the institutional layer above them.
+Its job is to define the work contract agents can consume across runtimes.
 
 ## Repository Layout
 
@@ -269,9 +316,10 @@ guild/
 
 Guild v1 target scope:
 
+- agent-consumable `Taskpack`/mandate, context, preflight, approval, proof, replay, and claim workflows
 - `Taskpack`, `DRI`, `Artifact`, and `Promotion Record` schemas
 - `Replay Bundle` schema for portable replay and evaluation evidence
-- a single-node control plane
+- a single-node API for teams that want a hosted/shared desk
 - Postgres-backed task registry
 - object storage-backed artifact system
 - approval flow
@@ -287,9 +335,14 @@ Guild v1 will not include:
 
 Current bootstrap implementation:
 
+- local `agentdesk.yaml` and `.agentdesk/` workflow for agents that do not need a server
+- local claim leases so multiple agents do not pick the same mandate
+- GitHub Issues source adapter for issues labeled `agent:ready`
+- GitHub Actions/PR report output for `agentdesk verify`
+- executable local MCP server for Codex, Claude, OpenClaw, OpenFang, and other MCP hosts
 - JSON Schemas for the four core public objects
 - draft 2020-12 spec validation for examples and bootstrap fixtures
-- file-backed local control plane for fast OSS iteration
+- file-backed local API for fast OSS iteration
 - `GET/POST` endpoints for `Taskpack`, `DRI Binding`, `Artifact`, and `Promotion Record`
 - seeded fixture data for local development and UI testing
 - runtime validation for schema version, UUIDs, enums, timestamps, URIs, labels, and token budgets
@@ -305,7 +358,7 @@ Current bootstrap implementation:
 - governance policies, human approval requests, promotion gates, and commons registry entries
 - full simulation script for the one task/DRI/artifact/replay/promoted-learning story
 - neutral TypeScript adapter core for orchestrator-specific wrappers
-- MCP-style bridge package with Guild tool definitions and handlers
+- MCP bridge package with Guild tool definitions, handlers, and the executable `guild-agentdesk-mcp` local server
 - A2A-style bridge package with task/result mappers
 - LangGraph adapter package with a node-shaped bridge for real graph integration
 - adapter conformance profiles and a reusable `adapter-alpha` badge
@@ -371,6 +424,58 @@ Validate one object through the CLI:
 ```bash
 go run ./cli/cmd/guild validate --kind taskpack --file spec/examples/taskpack.example.json
 go run ./cli/cmd/guild validate --kind replay-bundle --file spec/examples/replay-bundle.example.json
+go run ./cli/cmd/guild validate --kind workspace-constitution --file spec/examples/workspace-constitution.example.json
+```
+
+Run the agent-first local workflow without a server:
+
+```bash
+go run ./cli/cmd/guild agentdesk init
+go run ./cli/cmd/guild agentdesk mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
+go run ./cli/cmd/guild agentdesk next
+go run ./cli/cmd/guild agentdesk claim --id <mandate-id> --agent codex
+go run ./cli/cmd/guild agentdesk next --source github --repo lucid-fdn/app --query "label:agent:ready state:open"
+go run ./cli/cmd/guild agentdesk context compile --id <mandate-id> --role coder
+go run ./cli/cmd/guild agentdesk preflight --id <mandate-id> --action write --path src/auth/login.ts
+go run ./cli/cmd/guild agentdesk approval request --id <mandate-id> --reason "Need owner consent"
+go run ./cli/cmd/guild agentdesk approval resolve --approval-id <approval-id> --decision approved
+go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
+go run ./cli/cmd/guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+go run ./cli/cmd/guild agentdesk verify --id <mandate-id>
+go run ./cli/cmd/guild agentdesk close --id <mandate-id>
+go run ./cli/cmd/guild agentdesk replay export --id <mandate-id>
+```
+
+Use GitHub Issues as the human task source:
+
+```yaml
+task_sources:
+  - type: github_issues
+    repo: lucid-fdn/app
+    query: "label:agent:ready state:open"
+```
+
+Then agents can run:
+
+```bash
+GITHUB_TOKEN=... go run ./cli/cmd/guild agentdesk next --source github
+```
+
+In GitHub Actions, use `agentdesk verify --github-report` to write the PR/step report:
+
+```bash
+go run ./cli/cmd/guild agentdesk replay export --id <mandate-id> --file .agentdesk/replay/replay.json
+go run ./cli/cmd/guild agentdesk verify --id <mandate-id> --github-report --replay-file .agentdesk/replay/replay.json
+```
+
+The report includes:
+
+```text
+Agent Work Contract: passed
+Mandate: ...
+Proof: test_report, changed_files, handoff_summary
+Approvals: resolved
+Replay: attached
 ```
 
 Run the server:
@@ -394,7 +499,7 @@ make check-adapters
 Adapter packages:
 
 - `@guild/adapter-core` provides neutral builders for `Taskpack`, `DRI Binding`, and `Artifact`.
-- `@guild/adapter-mcp` exposes MCP-style tool definitions and handlers for taskpacks, DRIs, artifacts, and replay bundles.
+- `@guild/adapter-mcp` exposes MCP tool definitions, handlers, and the `guild-agentdesk-mcp` executable for mandates, claims, preflight checks, context packs, proof artifacts, DRIs, and replay bundles.
 - `@guild/adapter-a2a` maps A2A-style task/result envelopes into Guild institutional records.
 - `@guild/adapter-langgraph` provides a LangGraph-compatible node that submits Taskpack, DRI, and Artifact records while returning a graph state patch.
 
@@ -443,7 +548,7 @@ go run ./cli/cmd/guild replay-suite \
   --suite examples/replay-suite.example.json
 ```
 
-Queue a replay/evaluation job through the control plane worker path:
+Queue a replay/evaluation job through the shared API worker path:
 
 ```bash
 go run ./cli/cmd/guild eval-submit \
@@ -509,17 +614,17 @@ ignored source paths, executable scripts, and generated local artifacts.
 
 ## Initial Build Sequence
 
-1. Freeze the core spec objects.
-2. Build the single-node control plane.
-3. Build the trace and replay UI.
-4. Add MCP and A2A adapters.
-5. Add learning-plane candidate extraction.
-6. Add benchmark-driven promotion gates.
+1. Freeze the agent work-contract objects.
+2. Build the local AgentDesk workflow.
+3. Add MCP and GitHub source integrations.
+4. Build the shared API and trace/replay UI.
+5. Add A2A and orchestrator adapters.
+6. Add learning-plane candidate extraction and benchmark-driven promotion gates.
 
 ## Category
 
-Guild is "the institution layer for AI teams."
+Guild is an agent work-contract layer.
 
 Short version:
 
-One task. One owner. Durable artifacts. Shared learning.
+Mandate. Claim. Context. Proof. Replay.

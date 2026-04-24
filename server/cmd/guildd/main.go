@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/guild-labs/guild/server/internal/app"
-	"github.com/guild-labs/guild/server/internal/config"
+	"github.com/lucid-fdn/guild/server/internal/app"
+	"github.com/lucid-fdn/guild/server/internal/config"
 )
 
 func main() {

@@ -1,0 +1,55 @@
+name: Agent Work Contract
+
+on:
+  workflow_call:
+    inputs:
+      mandate_id:
+        required: true
+        type: string
+      replay_file:
+        required: false
+        type: string
+        default: .agentdesk/replay/replay.json
+  workflow_dispatch:
+    inputs:
+      mandate_id:
+        description: AgentDesk mandate/taskpack UUID to verify
+        required: true
+        type: string
+      replay_file:
+        description: Replay bundle path to generate and reference
+        required: false
+        type: string
+        default: .agentdesk/replay/replay.json
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.0"
+      - run: go build -o guild ./cli/cmd/guild
+      - name: Export replay bundle
+        env:
+          MANDATE_ID: ${{ inputs.mandate_id }}
+          REPLAY_FILE: ${{ inputs.replay_file }}
+        run: |
+          mkdir -p "$(dirname "${REPLAY_FILE}")"
+          ./guild agentdesk replay export --id "${MANDATE_ID}" --file "${REPLAY_FILE}"
+      - name: Verify agent work contract
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MANDATE_ID: ${{ inputs.mandate_id }}
+          REPLAY_FILE: ${{ inputs.replay_file }}
+        run: |
+          ./guild agentdesk verify \
+            --id "${MANDATE_ID}" \
+            --github-report \
+            --replay-file "${REPLAY_FILE}"

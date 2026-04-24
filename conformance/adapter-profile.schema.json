@@ -46,8 +46,15 @@
         "type": "string",
         "enum": [
           "taskpack.create",
+          "mandate.next",
+          "mandate.close",
+          "mandate.verify",
+          "context.compile",
+          "preflight.check",
+          "approval.request",
           "dri.assign",
           "artifact.publish",
+          "handoff.create",
           "replay.export",
           "state.patch",
           "transport.map"
@@ -63,6 +70,10 @@
         "enum": [
           "schemas.closed",
           "taskpack.valid",
+          "context.bounded",
+          "preflight.policy",
+          "approval.explicit",
+          "handoff.structured",
           "dri.single_owner",
           "artifact.provenance",
           "replay.compatible",

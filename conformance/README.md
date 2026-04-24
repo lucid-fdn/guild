@@ -60,5 +60,5 @@ make lint-adapter-profiles
 
 The CLI uses the public Go spec packages:
 
-- `github.com/guild-labs/guild/pkg/spec`
-- `github.com/guild-labs/guild/pkg/spec/validate`
+- `github.com/lucid-fdn/guild/pkg/spec`
+- `github.com/lucid-fdn/guild/pkg/spec/validate`

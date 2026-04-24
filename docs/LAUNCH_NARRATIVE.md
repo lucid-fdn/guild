@@ -2,192 +2,175 @@
 
 ## Category
 
-Guild is the institution layer for AI teams.
+Guild is an agent work-contract layer.
 
-It is not another orchestrator.
-
-Brand note: the stronger public name candidate is `Polity`.
-See [Brand Narrative](BRAND_NARRATIVE.md).
+It is not another orchestrator, agent OS, kanban board, or shared-memory product.
+It is the small operational contract every agent should consume before it starts and produce evidence against before it stops.
 
 ## Core Story
 
-AI teams fail for the same reason human teams fail:
+Every agent run starts with a mandate and ends with proof.
 
+Today, agents are often dropped into work with:
+
+- vague instructions
+- too much repo context
 - unclear ownership
-- messy handoffs
-- too much context
-- no durable record of what was learned
+- no local claim or lock
+- ad hoc approvals
+- proof scattered across chat, shell output, and PR comments
 
-Existing agent stacks mostly solve execution.
-They do not solve institutions.
+Guild turns that into a boring, inspectable lifecycle:
 
-Guild gives agent teams:
+```text
+task source -> mandate -> claim -> context pack -> preflight -> work -> proof -> verify -> replay
+```
 
-- one owner per task
-- portable handoffs
-- durable artifacts
-- approvals
-- replay
-- governed collective learning
+The first wedge is immediate pain relief for teams already using autonomous agents.
+Humans can keep creating tasks where they already work, especially GitHub Issues.
+Agents can consume those tasks directly through CLI or MCP.
 
-## The Narrative To Repeat
+## The One-Liner
 
-Humans win through institutions.
-Agents will too.
-
-## The Sharpest One-Liner
-
-Bring your own orchestrator.
-Guild adds ownership, artifacts, and institutional memory.
+Every agent run starts with a mandate and ends with proof.
 
 ## The 3-Step Pitch
 
-1. Every task gets one accountable agent.
-2. Every important output becomes an artifact.
-3. Every institutional learning must earn promotion through replay and benchmarks.
+1. Give the agent one clear mandate with allowed scope and success criteria.
+2. Make the agent claim the mandate, compile bounded context, and preflight risky actions.
+3. Require proof artifacts and replay before the work is considered done.
 
 ## What To Avoid In Messaging
 
 - "swarm intelligence"
+- "agent control plane"
+- "autonomous company"
 - "multi-agent orchestration"
 - "self-improving agents"
 - "communism for agents"
 - "freemason-trained agents"
 
-These frames are either crowded, unserious, or too easy for larger projects to absorb.
+These frames are crowded, vague, or too easy for bigger agent OS projects to absorb.
 
 ## What To Emphasize
 
-- ownership
-- handoffs
-- review
+- mandate
+- claim
+- bounded context
+- preflight guardrails
+- human approval only when needed
+- proof artifacts
+- verification
 - replay
-- governance
-- collective learning
-- orchestrator-agnostic adoption
+- GitHub-native task intake
+- MCP-native agent consumption
 
 ## Launch Assets
 
-### 1. GitHub README
+### GitHub README
 
 Must communicate:
 
-- what Guild is
-- what it is not
-- the four standard objects
-- why this matters
+- the one-line contract
+- the AgentDesk local workflow
+- the MCP server
+- GitHub Issues ingestion
+- GitHub Actions verification
+- why this is not another orchestrator
 
-### 2. Demo Video
+### Demo Video
 
 Show:
 
-- a task entering Guild
-- DRI assignment
-- two subtask handoffs
-- artifact production
-- review and approval
-- replay
-- candidate learning
+- a GitHub issue labeled `agent:ready`
+- `guild agentdesk next --source github`
+- `guild agentdesk claim --id ...`
+- context compilation and preflight
+- proof artifacts added by the agent
+- `guild agentdesk verify --github-report`
+- replay export
 
-### 3. Architecture Post
-
-Title idea:
-
-"Why agent teams need institutions, not more orchestration"
-
-### 4. Spec Post
+### Architecture Post
 
 Title idea:
 
-"Introducing Taskpack: a portable handoff format for agent work"
+"Agents need work contracts, not bigger chat histories"
 
-### 5. Visual Explainer
+### Spec Post
+
+Title idea:
+
+"Introducing Taskpack: a mandate format for agent work"
+
+### Visual Explainer
 
 One diagram showing:
 
-- orchestrator below
-- Guild above
-- user and UI on one side
-- commons and replay on the other
+- GitHub Issues / local tasks on the left
+- Guild AgentDesk in the middle
+- Codex, Claude, OpenClaw, OpenFang, LangGraph, and custom agents on the right through CLI/MCP
+- proof and replay below
 
 ## Audience Order
 
-### 1. Builders already using agent stacks
+### 1. Builders already using autonomous coding agents
 
-They feel the pain first.
+They feel the pain first: duplicated tasks, missing proof, unclear handoffs, and giant context dumps.
 
-### 2. Infra-minded OSS community
+### 2. Agent framework authors
 
-They care about standards, replay, and governance.
+They need a neutral contract their orchestrators can consume instead of inventing local task/proof semantics.
 
-### 3. Enterprise engineering leaders
+### 3. Engineering teams experimenting with AI workers
 
-They care about safety, clarity, and auditability.
+They need guardrails without forcing humans to manage a new dashboard all day.
 
 ## Proof Points Needed For Credibility
 
-1. Works with more than one orchestrator
-2. Replay actually works
-3. Schemas are clean and stable
-4. Artifact lineage is visible
-5. DRI and approval model are simple enough to explain quickly
-
-## Launch Order
-
-### Week 1
-
-- open-source repo
-- README
-- schemas
-- examples
-
-### Week 2
-
-- control-plane skeleton
-- trace and replay mock
-- first adapter
-
-### Week 3
-
-- demo video
-- launch essay
-- landing page
+1. `agentdesk` works locally with no server.
+2. MCP hosts can fetch, claim, and verify mandates.
+3. GitHub Issues labeled `agent:ready` become mandates.
+4. GitHub Actions can verify proof and publish a PR report.
+5. Replay bundles can be exported and inspected.
 
 ## Draft HN Angle
 
 Title:
 
-Show HN: Guild, an institution layer for AI teams
+Show HN: Guild, work contracts for autonomous agents
 
 Body direction:
 
-- not another agent framework
-- works above existing orchestrators
-- standardizes Taskpacks, DRIs, artifacts, and promotion records
-- designed for replay, review, and governed collective learning
+- every agent run starts with a mandate and ends with proof
+- not another orchestrator
+- local-first CLI plus executable MCP server
+- turns GitHub Issues into agent-consumable mandates
+- verifies tests, changed files, handoffs, approvals, and replay in CI
 
 ## Draft X Angle
 
 Post:
 
-Most agent stacks focus on execution.
-The real missing layer is institutions:
+Agents should not start from a vague chat prompt.
 
-- one owner per task
-- portable handoffs
-- durable artifacts
+They should start from a mandate:
+
+- objective
+- allowed scope
+- bounded context
+- preflight rules
+- required proof
 - replay
-- governed learning
 
-We built Guild: the institution layer for AI teams.
+We built Guild: every agent run starts with a mandate and ends with proof.
 
 ## Competitive Story
 
-Do not attack OpenFang, Hermes, or LangGraph head-on.
+Do not attack OpenFang, Hermes, Codex, Claude, LangGraph, CrewAI, or OpenAI Agents SDK.
 
 Instead:
 
-- they help agents run
-- Guild helps agent teams operate
+- they help agents execute
+- Guild gives each run a portable work contract
 
-That framing avoids a framework war and positions Guild as a higher layer.
+That avoids a framework war and makes Guild useful to every runtime.

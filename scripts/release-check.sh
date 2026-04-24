@@ -10,6 +10,8 @@ required_not_ignored=(
   "adapters/a2a/src/index.ts"
   "adapters/langgraph/src/index.ts"
   "adapters/mcp/src/index.ts"
+  "adapters/mcp/src/server.ts"
+  "adapters/mcp/bin/guild-agentdesk-mcp"
   "adapters/typescript/src/index.ts"
   "examples/one-task-one-dri-commons/run.sh"
   "scripts/smoke.sh"
@@ -26,6 +28,7 @@ required_executable=(
   "scripts/e2e.sh"
   "scripts/simulation.sh"
   "scripts/lib/server.sh"
+  "adapters/mcp/bin/guild-agentdesk-mcp"
 )
 
 echo "release-check: git ignore guard"

@@ -1,0 +1,12 @@
+{
+  "schema_version": "v1alpha1",
+  "mandate_id": "4e1fe00c-6303-453c-8cb6-2c34f84896e4",
+  "action": "write",
+  "path": "src/auth/login.ts",
+  "decision": "allow",
+  "reason": "Path is within mandate and workspace writable scope.",
+  "approval_required": false,
+  "matched_rules": [
+    "scope.writable"
+  ]
+}

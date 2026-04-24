@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/guild-labs/guild/pkg/spec"
+	"github.com/lucid-fdn/guild/pkg/spec"
 )
 
 func TestTaskpackRejectsSpecViolations(t *testing.T) {

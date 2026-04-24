@@ -4,6 +4,9 @@
 
 `Polity`
 
+Status: long-term storytelling spine, not the current launch positioning.
+The current product wedge is agent-first: every agent run starts with a mandate and ends with proof.
+
 Polity means an organized community with governance, roles, rules, and institutional memory.
 
 That is the product thesis:
@@ -152,4 +155,3 @@ Recommendation:
 Buy `polity.dev` if available.
 If not, buy `polity.sh`.
 If both are unavailable or premium, use `getpolity.dev`.
-

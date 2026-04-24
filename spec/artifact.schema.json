@@ -43,6 +43,14 @@
         "decision_log",
         "benchmark_result",
         "skill_candidate",
+        "test_report",
+        "diff",
+        "changed_files",
+        "screenshot",
+        "log_excerpt",
+        "security_review",
+        "handoff_summary",
+        "human_approval",
         "custom"
       ]
     },
@@ -139,4 +147,3 @@
     }
   }
 }
-

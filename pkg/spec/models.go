@@ -149,6 +149,76 @@ type ReplayBundle struct {
 	PromotionRecords []PromotionRecord `json:"promotion_records"`
 }
 
+type WorkspaceConstitution struct {
+	SchemaVersion   string               `json:"schema_version" yaml:"version"`
+	Workspace       string               `json:"workspace" yaml:"workspace"`
+	Mission         string               `json:"mission" yaml:"mission"`
+	Defaults        WorkspaceDefaults    `json:"defaults" yaml:"defaults"`
+	TaskSources     []TaskSource         `json:"task_sources,omitempty" yaml:"task_sources,omitempty"`
+	Scope           WorkspaceScope       `json:"scope" yaml:"scope"`
+	ApprovalRules   []WorkspaceRule      `json:"approval_rules,omitempty" yaml:"approval_rules,omitempty"`
+	SuccessCriteria []string             `json:"success_criteria,omitempty" yaml:"success_criteria,omitempty"`
+	Escalation      *WorkspaceEscalation `json:"escalation,omitempty" yaml:"escalation,omitempty"`
+}
+
+type WorkspaceDefaults struct {
+	MaxRuntimeMinutes   int     `json:"max_runtime_minutes" yaml:"max_runtime_minutes"`
+	MaxCostUSD          float64 `json:"max_cost_usd" yaml:"max_cost_usd"`
+	ContextBudgetTokens int     `json:"context_budget_tokens" yaml:"context_budget_tokens"`
+}
+
+type TaskSource struct {
+	Type  string `json:"type" yaml:"type"`
+	Repo  string `json:"repo,omitempty" yaml:"repo,omitempty"`
+	Query string `json:"query,omitempty" yaml:"query,omitempty"`
+	Path  string `json:"path,omitempty" yaml:"path,omitempty"`
+}
+
+type WorkspaceScope struct {
+	Writable  []string `json:"writable,omitempty" yaml:"writable,omitempty"`
+	Forbidden []string `json:"forbidden,omitempty" yaml:"forbidden,omitempty"`
+}
+
+type WorkspaceRule struct {
+	When    string `json:"when" yaml:"when"`
+	Require string `json:"require" yaml:"require"`
+}
+
+type WorkspaceEscalation struct {
+	DefaultOwner string              `json:"default_owner,omitempty" yaml:"default_owner,omitempty"`
+	Channels     []EscalationChannel `json:"channels,omitempty" yaml:"channels,omitempty"`
+}
+
+type EscalationChannel struct {
+	Type string `json:"type" yaml:"type"`
+}
+
+type ContextPack struct {
+	SchemaVersion  string   `json:"schema_version"`
+	MandateID      string   `json:"mandate_id"`
+	Role           string   `json:"role"`
+	BudgetTokens   int      `json:"budget_tokens"`
+	MustRead       []string `json:"must_read,omitempty"`
+	MayRead        []string `json:"may_read,omitempty"`
+	MayWrite       []string `json:"may_write,omitempty"`
+	Forbidden      []string `json:"forbidden,omitempty"`
+	Summary        string   `json:"summary"`
+	ProofRequired  []string `json:"proof_required,omitempty"`
+	OmittedReasons []string `json:"omitted_reasons,omitempty"`
+}
+
+type PreflightDecision struct {
+	SchemaVersion    string   `json:"schema_version"`
+	MandateID        string   `json:"mandate_id"`
+	Action           string   `json:"action"`
+	Path             string   `json:"path,omitempty"`
+	Command          string   `json:"command,omitempty"`
+	Decision         string   `json:"decision"`
+	Reason           string   `json:"reason"`
+	ApprovalRequired bool     `json:"approval_required"`
+	MatchedRules     []string `json:"matched_rules,omitempty"`
+}
+
 type Institution struct {
 	SchemaVersion string `json:"schema_version"`
 	InstitutionID string `json:"institution_id"`

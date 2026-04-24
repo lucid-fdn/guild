@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guild.dev/spec/context-pack.schema.json",
+  "title": "Context Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "mandate_id",
+    "role",
+    "budget_tokens",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "v1alpha1"
+    },
+    "mandate_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "role": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "budget_tokens": {
+      "type": "integer",
+      "minimum": 256
+    },
+    "must_read": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "may_read": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "may_write": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "forbidden": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "proof_required": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "omitted_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

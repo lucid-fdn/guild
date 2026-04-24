@@ -64,10 +64,13 @@ importers:
       '@guild/client':
         specifier: workspace:*
         version: link:../../sdk/typescript
-    devDependencies:
       tsx:
         specifier: ^4.20.6
         version: 4.21.0
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.19.17
       typescript:
         specifier: ^5.8.3
         version: 5.9.3

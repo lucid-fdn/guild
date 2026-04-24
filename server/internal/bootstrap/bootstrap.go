@@ -4,8 +4,8 @@ import (
 	_ "embed"
 	"encoding/json"
 
-	"github.com/guild-labs/guild/pkg/spec"
-	"github.com/guild-labs/guild/server/internal/storage"
+	"github.com/lucid-fdn/guild/pkg/spec"
+	"github.com/lucid-fdn/guild/server/internal/storage"
 )
 
 //go:embed fixtures/taskpack.json

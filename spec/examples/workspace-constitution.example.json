@@ -1,0 +1,64 @@
+{
+  "schema_version": "v1alpha1",
+  "workspace": "lucid-fdn/app",
+  "mission": "Ship reliable product changes with accountable AI agents.",
+  "defaults": {
+    "max_runtime_minutes": 45,
+    "max_cost_usd": 5,
+    "context_budget_tokens": 12000
+  },
+  "task_sources": [
+    {
+      "type": "local",
+      "path": ".agentdesk/mandates"
+    },
+    {
+      "type": "github_issues",
+      "repo": "lucid-fdn/app",
+      "query": "label:agent:ready state:open"
+    }
+  ],
+  "scope": {
+    "writable": [
+      "src/**",
+      "tests/**",
+      "docs/**"
+    ],
+    "forbidden": [
+      ".env",
+      "infra/prod/**",
+      "billing/**"
+    ]
+  },
+  "approval_rules": [
+    {
+      "when": "touches_forbidden_path",
+      "require": "human"
+    },
+    {
+      "when": "runs_destructive_command",
+      "require": "human"
+    },
+    {
+      "when": "pushes_to_main",
+      "require": "human"
+    }
+  ],
+  "success_criteria": [
+    "Tests pass or failure is explained.",
+    "Every modified file is listed.",
+    "A proof artifact is attached.",
+    "A reviewer handoff is created."
+  ],
+  "escalation": {
+    "default_owner": "@quentin",
+    "channels": [
+      {
+        "type": "github_comment"
+      },
+      {
+        "type": "cli_prompt"
+      }
+    ]
+  }
+}

@@ -7,9 +7,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/guild-labs/guild/pkg/spec"
-	specvalidate "github.com/guild-labs/guild/pkg/spec/validate"
-	"github.com/guild-labs/guild/server/internal/storage"
+	"github.com/lucid-fdn/guild/pkg/spec"
+	specvalidate "github.com/lucid-fdn/guild/pkg/spec/validate"
+	"github.com/lucid-fdn/guild/server/internal/storage"
 )
 
 type Service struct {

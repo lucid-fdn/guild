@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/guild-labs/guild/server/internal/config"
+	"github.com/lucid-fdn/guild/server/internal/config"
 )
 
 func TestNewReturnsStartupError(t *testing.T) {

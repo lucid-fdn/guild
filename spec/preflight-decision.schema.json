@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guild.dev/spec/preflight-decision.schema.json",
+  "title": "Preflight Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "mandate_id",
+    "action",
+    "decision",
+    "reason",
+    "approval_required"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "v1alpha1"
+    },
+    "mandate_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "read",
+        "write",
+        "run",
+        "network",
+        "secret",
+        "git_push",
+        "dependency_install",
+        "prod_access",
+        "custom"
+      ]
+    },
+    "path": {
+      "type": "string"
+    },
+    "command": {
+      "type": "string"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "allow",
+        "deny",
+        "needs_approval",
+        "needs_handoff"
+      ]
+    },
+    "reason": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "approval_required": {
+      "type": "boolean"
+    },
+    "matched_rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

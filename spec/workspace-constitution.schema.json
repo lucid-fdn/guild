@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guild.dev/spec/workspace-constitution.schema.json",
+  "title": "Workspace Constitution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "workspace",
+    "mission",
+    "defaults",
+    "scope"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "v1alpha1"
+    },
+    "workspace": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "mission": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_runtime_minutes",
+        "max_cost_usd",
+        "context_budget_tokens"
+      ],
+      "properties": {
+        "max_runtime_minutes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_cost_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "context_budget_tokens": {
+          "type": "integer",
+          "minimum": 256
+        }
+      }
+    },
+    "task_sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "local",
+              "github_issues",
+              "ci_failure",
+              "linear",
+              "jira",
+              "slack",
+              "paperclip",
+              "openfang",
+              "openclaw",
+              "custom"
+            ]
+          },
+          "repo": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "writable": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forbidden": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "approval_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "when",
+          "require"
+        ],
+        "properties": {
+          "when": {
+            "type": "string",
+            "enum": [
+              "touches_forbidden_path",
+              "runs_destructive_command",
+              "changes_auth_or_payments",
+              "pushes_to_main",
+              "external_api_call",
+              "secret_access",
+              "dependency_install",
+              "production_access",
+              "custom"
+            ]
+          },
+          "require": {
+            "type": "string",
+            "enum": [
+              "human",
+              "reviewer",
+              "owner",
+              "deny"
+            ]
+          }
+        }
+      }
+    },
+    "success_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "escalation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "default_owner": {
+          "type": "string"
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
