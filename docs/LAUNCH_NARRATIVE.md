@@ -6,6 +6,9 @@ Guild is the institution layer for AI teams.
 
 It is not another orchestrator.
 
+Brand note: the stronger public name candidate is `Polity`.
+See [Brand Narrative](BRAND_NARRATIVE.md).
+
 ## Core Story
 
 AI teams fail for the same reason human teams fail:

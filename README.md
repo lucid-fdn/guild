@@ -24,6 +24,7 @@ Guild gives those stacks ownership, institutional memory, review, replay, and co
 - Run the canonical [one task, one DRI, commons example](examples/one-task-one-dri-commons/README.md).
 - Use `make simulation` to verify the full institution loop end-to-end.
 - Review the [launch assets](launch/README.md) for landing copy, demo script, starter issues, and the GIF.
+- Review the [brand narrative](docs/BRAND_NARRATIVE.md) for the `Polity` naming direction and civilization metaphor.
 
 ## Why Guild
 
