@@ -36,7 +36,7 @@ GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proo
 
 ## Start Here
 
-- Install the CLI with `go install github.com/lucid-fdn/guild/cli/cmd/guild@latest`.
+- Install the alpha CLI with `go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.1`.
 - Run [AgentDesk](#agentdesk-local-agent-workflow) locally with no server.
 - Point agents at the executable [MCP server](adapters/mcp/README.md) with copy-paste [host setup](docs/MCP_SETUP.md).
 - Turn GitHub issues labeled `agent:ready` into mandates.
@@ -49,7 +49,7 @@ GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proo
 Alpha install path:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@latest
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.1
 guild agentdesk init
 guild mcp serve
 ```
@@ -57,7 +57,7 @@ guild mcp serve
 Single-binary MCP path:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@latest
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.1
 guild mcp serve
 ```
 
@@ -394,7 +394,7 @@ Current bootstrap implementation:
 - governance policies, human approval requests, promotion gates, and commons registry entries
 - full simulation script for the one task/DRI/artifact/replay/promoted-learning story
 - neutral TypeScript adapter core for orchestrator-specific wrappers
-- MCP bridge package with Guild tool definitions, handlers, and the executable `guild-agentdesk-mcp` local server
+- single-binary `guild mcp serve` server plus MCP bridge package for reusable tool definitions and host compatibility tests
 - A2A-style bridge package with task/result mappers
 - LangGraph adapter package with a node-shaped bridge for real graph integration
 - adapter conformance profiles and a reusable `adapter-alpha` badge

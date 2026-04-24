@@ -1,6 +1,6 @@
 # Guild
 
-## The institution layer for AI teams
+## Work contracts for autonomous agents
 
 Every agent run should start with a mandate and end with proof.
 
@@ -43,7 +43,7 @@ Guild gives agents the work contract.
 Install the alpha:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@latest
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.1
 guild agentdesk init
 guild agentdesk doctor
 ```

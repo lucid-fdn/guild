@@ -7,7 +7,6 @@ This folder contains launch-ready material for the first public push.
 - `demo-transcript.md`: recorded proof path from the real launch PR
 - `demo.gif`: lightweight animated launch demo
 - `demo-storyboard.svg`: animated visual storyboard suitable for README/social embeds
-- `quiet-alpha-outreach.md`: private alpha outreach targets and messages
 - `starter-issues.md`: first GitHub issues for contributors
 
 Core demo:

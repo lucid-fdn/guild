@@ -15,7 +15,7 @@ Every agent run starts with a mandate and ends with proof.
 Public alpha install:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@latest
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.1
 guild agentdesk init
 guild agentdesk doctor
 ```
