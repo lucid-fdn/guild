@@ -1,23 +1,21 @@
 # MCP Setup
 
-Guild ships `guild-agentdesk-mcp`, an executable MCP stdio server that wraps the current repo's `agentdesk.yaml` and `.agentdesk/` directory.
+Guild ships a single-binary MCP stdio server.
+After `go install`, agent hosts can connect directly to `guild mcp serve`.
 
 Use it when you want Codex, Claude, OpenClaw, OpenFang, or another MCP-capable agent host to fetch mandates, claim work, compile context, run preflight checks, request approvals, publish proof, verify completion, and export replay without a hosted service.
 
 ## 90-Second Agent Quickstart
 
-From this repo:
-
 ```bash
-corepack enable
-corepack pnpm install --frozen-lockfile
-go build -o bin/guild ./cli/cmd/guild
-./bin/guild agentdesk init
-./bin/guild agentdesk mandate create "Update MCP docs" --writable "docs/**,adapters/mcp/**"
-GUILD_CLI="$(pwd)/bin/guild" corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+go install github.com/lucid-fdn/guild/cli/cmd/guild@latest
+guild agentdesk init
+guild agentdesk mandate create "Update MCP docs" --writable "docs/**,adapters/mcp/**"
+guild agentdesk doctor
+guild mcp serve
 ```
 
-The MCP host connects to that last command over stdio.
+The MCP host connects to `guild mcp serve` over stdio.
 
 After connection, the agent flow is:
 
@@ -32,58 +30,31 @@ guild_verify_mandate
 guild_export_replay_bundle
 ```
 
-## Local Binary Path
-
-For local development, build the CLI once and point the MCP server at the absolute binary path:
-
-```bash
-go build -o bin/guild ./cli/cmd/guild
-export GUILD_CLI="$(pwd)/bin/guild"
-corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
-```
-
-After the repo is available on GitHub, users can also install the CLI with Go:
-
-```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@latest
-export GUILD_CLI="guild"
-corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
-```
-
-Until the MCP package is published to npm, the supported package-style path is the workspace executable:
-
-```bash
-corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
-```
-
 ## Claude Desktop Config
-
-Use the local binary path you built above:
 
 ```json
 {
   "mcpServers": {
     "guild-agentdesk": {
-      "command": "corepack",
-      "args": ["pnpm", "--dir", "/absolute/path/to/guild/adapters/mcp", "exec", "guild-agentdesk-mcp"],
+      "command": "guild",
+      "args": ["mcp", "serve"],
       "env": {
-        "GUILD_CLI": "/absolute/path/to/guild/bin/guild"
+        "GITHUB_REPOSITORY": "lucid-fdn/guild"
       }
     }
   }
 }
 ```
 
-If the agent should pull GitHub Issues labeled `agent:ready`, add:
+If the agent should pull GitHub Issues labeled `agent:ready`, add a token:
 
 ```json
 {
   "mcpServers": {
     "guild-agentdesk": {
-      "command": "corepack",
-      "args": ["pnpm", "--dir", "/absolute/path/to/guild/adapters/mcp", "exec", "guild-agentdesk-mcp"],
+      "command": "guild",
+      "args": ["mcp", "serve"],
       "env": {
-        "GUILD_CLI": "/absolute/path/to/guild/bin/guild",
         "GUILD_AGENTDESK_SOURCE": "github",
         "GITHUB_REPOSITORY": "lucid-fdn/guild",
         "GITHUB_TOKEN": "ghp_or_fine_grained_token"
@@ -99,11 +70,10 @@ For Codex-style MCP configuration, use a stdio server entry:
 
 ```toml
 [mcp_servers.guild-agentdesk]
-command = "corepack"
-args = ["pnpm", "--dir", "/absolute/path/to/guild/adapters/mcp", "exec", "guild-agentdesk-mcp"]
+command = "guild"
+args = ["mcp", "serve"]
 
 [mcp_servers.guild-agentdesk.env]
-GUILD_CLI = "/absolute/path/to/guild/bin/guild"
 GUILD_AGENTDESK_SOURCE = "github"
 GITHUB_REPOSITORY = "lucid-fdn/guild"
 GITHUB_TOKEN = "ghp_or_fine_grained_token"
@@ -117,10 +87,9 @@ Any host that accepts MCP stdio server definitions can use the same command shap
 {
   "name": "guild-agentdesk",
   "transport": "stdio",
-  "command": "corepack",
-  "args": ["pnpm", "--dir", "/absolute/path/to/guild/adapters/mcp", "exec", "guild-agentdesk-mcp"],
+  "command": "guild",
+  "args": ["mcp", "serve"],
   "env": {
-    "GUILD_CLI": "/absolute/path/to/guild/bin/guild",
     "GUILD_AGENTDESK_SOURCE": "github",
     "GITHUB_REPOSITORY": "lucid-fdn/guild",
     "GITHUB_TOKEN": "ghp_or_fine_grained_token"
@@ -129,6 +98,22 @@ Any host that accepts MCP stdio server definitions can use the same command shap
 ```
 
 If your host uses a Claude-style `mcpServers` object, wrap the same `command`, `args`, and `env` under a `guild-agentdesk` key.
+
+## Repo-Local TypeScript Server
+
+The TypeScript MCP package remains useful for adapter development:
+
+```bash
+git clone https://github.com/lucid-fdn/guild.git
+cd guild
+corepack enable
+corepack pnpm install --frozen-lockfile
+go build -o bin/guild ./cli/cmd/guild
+GUILD_CLI="$(pwd)/bin/guild" corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+```
+
+The public alpha install path is the Go binary plus `guild mcp serve`.
+Do not rely on an npm package until the final package scope is stable.
 
 ## Tool Contract
 
@@ -153,8 +138,7 @@ Create issues with the `agent:ready` label, then run:
 GITHUB_TOKEN="$(gh auth token)" \
 GITHUB_REPOSITORY="lucid-fdn/guild" \
 GUILD_AGENTDESK_SOURCE="github" \
-GUILD_CLI="$(pwd)/bin/guild" \
-corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+guild mcp serve
 ```
 
 The agent can then call `guild_get_next_mandate` and `guild_claim_mandate`.

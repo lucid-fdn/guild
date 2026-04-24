@@ -2,59 +2,54 @@
 
 ## The institution layer for AI teams
 
-Agents do not fail only because they lack intelligence.
-They fail because their teams lack institutions.
+Every agent run should start with a mandate and end with proof.
 
-Guild adds the missing operating system above orchestrators:
+Guild is the local-first work contract layer for autonomous agents:
 
-- one accountable DRI per task
-- bounded handoffs through Taskpacks
-- durable artifacts instead of chat history
-- human approval for risky decisions
-- replay suites for evaluation
-- promotion gates before institutional learning
-- a commons registry for proven team knowledge
+- GitHub Issues become machine-readable mandates
+- one agent claims one task
+- guardrails define allowed files and approval rules
+- context is bounded before the agent starts
+- proof artifacts make completion verifiable
+- replay bundles preserve what happened
 
 Bring your own orchestrator.
 Guild works above LangGraph, MCP hosts, A2A transports, custom runtimes, and future agent frameworks.
 
 ## Why now
 
-The next leap in agents is not just bigger models.
-It is social intelligence: ownership, review, governance, memory, and learning that survives one run.
+The immediate bottleneck is not model intelligence. It is operational clarity.
 
-Human teams scale through institutions.
-AI teams will too.
+Agents need the same basics human teams use: scope, ownership, consent, proof, and handoff.
 
 ## The demo
 
-1. A user opens a payment webhook audit.
-2. Guild creates one Taskpack and assigns one DRI.
-3. The DRI produces a review artifact.
-4. Guild exports a recursive replay bundle.
-5. An evaluator runs a benchmark suite.
-6. A promotion candidate is created.
-7. A human approval request gates the learning.
-8. The approved pattern enters the commons.
+1. A human creates a GitHub issue and labels it `agent:ready`.
+2. Guild turns it into a mandate.
+3. An agent claims the mandate locally.
+4. Guild compiles bounded context and checks guardrails.
+5. The agent attaches proof: tests, changed files, and handoff summary.
+6. CI verifies the Agent Work Contract and comments on the PR.
+7. The replay bundle becomes the audit trail.
 
 ## Positioning
 
-MCP gives agents tools.
-A2A gives agents interoperability.
-LangGraph gives agents execution graphs.
+MCP gives agents tools. A2A gives agents interoperability. LangGraph gives agents execution graphs.
 
-Guild gives agents institutions.
+Guild gives agents the work contract.
 
 ## CTA
 
-Run the full simulation:
+Install the alpha:
 
 ```bash
-make simulation
+go install github.com/lucid-fdn/guild/cli/cmd/guild@latest
+guild agentdesk init
+guild agentdesk doctor
 ```
 
-Run the release gate:
+Connect an MCP host:
 
 ```bash
-make release-check
+guild mcp serve
 ```

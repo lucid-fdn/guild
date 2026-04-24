@@ -51,9 +51,17 @@ Alpha install path:
 ```bash
 go install github.com/lucid-fdn/guild/cli/cmd/guild@latest
 guild agentdesk init
+guild mcp serve
 ```
 
-Repo-local MCP server path:
+Single-binary MCP path:
+
+```bash
+go install github.com/lucid-fdn/guild/cli/cmd/guild@latest
+guild mcp serve
+```
+
+Repo-local TypeScript MCP server path:
 
 ```bash
 git clone https://github.com/lucid-fdn/guild.git
@@ -64,7 +72,7 @@ go build -o bin/guild ./cli/cmd/guild
 GUILD_CLI="$(pwd)/bin/guild" corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
 ```
 
-Packaging decision for the public alpha: use `go install` for the CLI and the repo-local MCP executable for host integration.
+Packaging decision for the public alpha: use `go install` for the CLI and `guild mcp serve` for host integration.
 Do not publish an npm package until the final package scope/name is stable.
 
 ## Why This Exists
@@ -103,6 +111,7 @@ go run ./cli/cmd/guild agentdesk init
 go run ./cli/cmd/guild agentdesk mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
 go run ./cli/cmd/guild agentdesk next
 go run ./cli/cmd/guild agentdesk claim --id <mandate-id> --agent codex
+go run ./cli/cmd/guild agentdesk doctor --id <mandate-id>
 go run ./cli/cmd/guild agentdesk context compile --id <mandate-id> --role coder
 go run ./cli/cmd/guild agentdesk preflight --id <mandate-id> --action write --path src/auth/login.ts
 go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
@@ -137,9 +146,7 @@ Guild ships an executable local MCP server for agent hosts.
 It exposes AgentDesk as tools backed by the repo's `agentdesk.yaml` and `.agentdesk/` directory.
 
 ```bash
-go build -o bin/guild ./cli/cmd/guild
-GUILD_CLI="$(pwd)/bin/guild" \
-corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+guild mcp serve
 ```
 
 For Claude Desktop, Codex, OpenFang, OpenClaw, and generic MCP host configs, see [MCP Setup](docs/MCP_SETUP.md).
@@ -150,10 +157,10 @@ Example MCP config:
 {
   "mcpServers": {
     "guild-agentdesk": {
-      "command": "corepack",
-      "args": ["pnpm", "--dir", "/absolute/path/to/guild/adapters/mcp", "exec", "guild-agentdesk-mcp"],
+      "command": "guild",
+      "args": ["mcp", "serve"],
       "env": {
-        "GUILD_CLI": "/absolute/path/to/guild/bin/guild"
+        "GITHUB_REPOSITORY": "lucid-fdn/guild"
       }
     }
   }
@@ -528,7 +535,7 @@ make check-adapters
 Adapter packages:
 
 - `@guild/adapter-core` provides neutral builders for `Taskpack`, `DRI Binding`, and `Artifact`.
-- `@guild/adapter-mcp` exposes MCP tool definitions, handlers, and the `guild-agentdesk-mcp` executable for mandates, claims, preflight checks, context packs, proof artifacts, DRIs, and replay bundles.
+- `@guild/adapter-mcp` exposes MCP tool definitions and handlers for package development; the preferred alpha server is the single-binary `guild mcp serve`.
 - `@guild/adapter-a2a` maps A2A-style task/result envelopes into Guild institutional records.
 - `@guild/adapter-langgraph` provides a LangGraph-compatible node that submits Taskpack, DRI, and Artifact records while returning a graph state patch.
 

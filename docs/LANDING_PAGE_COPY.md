@@ -163,10 +163,10 @@ An MCP server agents can plug into.
 
 Body:
 
-Run `guild-agentdesk-mcp` in any initialized workspace and MCP hosts can fetch mandates, claim work, compile context, check preflight, request approvals, publish proof, verify completion, and export replay.
+Run `guild mcp serve` in any initialized workspace and MCP hosts can fetch mandates, claim work, compile context, check preflight, request approvals, publish proof, verify completion, and export replay.
 
 ```bash
-corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+guild mcp serve
 ```
 
 ## Section 6

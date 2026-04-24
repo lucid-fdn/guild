@@ -609,6 +609,138 @@ func TestAgentDeskVerifyPublishesGitHubReport(t *testing.T) {
 	}
 }
 
+func TestAgentDeskDoctorReportsReady(t *testing.T) {
+	dir := t.TempDir()
+	restore := chdir(t, dir)
+	defer restore()
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/repos/lucid-fdn/guild/labels" {
+			http.NotFound(w, r)
+			return
+		}
+		writeTestJSON(t, w, []map[string]string{{"name": "agent:ready"}})
+	}))
+	defer server.Close()
+	t.Setenv("GITHUB_API_URL", server.URL)
+	t.Setenv("GITHUB_TOKEN", "test-token")
+
+	if err := run([]string{"agentdesk", "init", "--workspace", "demo"}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("init failed: %v", err)
+	}
+	var stdout bytes.Buffer
+	if err := run([]string{"agentdesk", "mandate", "create", "Doctor task"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("mandate create failed: %v", err)
+	}
+	mandateID := strings.TrimSpace(strings.TrimPrefix(stdout.String(), "mandate-created "))
+	testReport := filepath.Join(dir, "test-results.xml")
+	changedFiles := filepath.Join(dir, "changed-files.json")
+	if err := os.WriteFile(testReport, []byte("<testsuite failures=\"0\"></testsuite>\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(changedFiles, []byte("[\"docs/demo.md\"]\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := run([]string{"agentdesk", "proof", "add", "--id", mandateID, "--kind", "test_report", "--path", testReport}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("test proof failed: %v", err)
+	}
+	if err := run([]string{"agentdesk", "proof", "add", "--id", mandateID, "--kind", "changed_files", "--path", changedFiles}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("changed files proof failed: %v", err)
+	}
+	if err := run([]string{"agentdesk", "handoff", "create", "--id", mandateID, "--to", "reviewer", "--summary", "Ready."}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("handoff failed: %v", err)
+	}
+	stdout.Reset()
+	if err := run([]string{"agentdesk", "doctor", "--id", mandateID, "--repo", "lucid-fdn/guild"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("doctor failed: %v output=%s", err, stdout.String())
+	}
+	var report agentDeskDoctorReport
+	if err := json.Unmarshal(stdout.Bytes(), &report); err != nil {
+		t.Fatal(err)
+	}
+	if !report.Ready {
+		t.Fatalf("expected ready doctor report, got %#v", report)
+	}
+	if !doctorHasCheck(report, "github_labels", "pass") {
+		t.Fatalf("expected github_labels pass, got %#v", report.Checks)
+	}
+	if !doctorHasCheck(report, "proof_readiness", "pass") {
+		t.Fatalf("expected proof_readiness pass, got %#v", report.Checks)
+	}
+}
+
+func TestMCPServerToolsAndLocalFlow(t *testing.T) {
+	dir := t.TempDir()
+	restore := chdir(t, dir)
+	defer restore()
+
+	if err := run([]string{"agentdesk", "init", "--workspace", "mcp"}, ioDiscard(), ioDiscard()); err != nil {
+		t.Fatalf("init failed: %v", err)
+	}
+	var stdout bytes.Buffer
+	if err := run([]string{"agentdesk", "mandate", "create", "MCP task"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("mandate create failed: %v", err)
+	}
+
+	list := handleMCPRequest(mcpRequest{JSONRPC: "2.0", ID: float64(1), Method: "tools/list"})
+	data, err := json.Marshal(list.Result)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(data), "guild_claim_mandate") {
+		t.Fatalf("expected claim tool, got %s", string(data))
+	}
+
+	next := handleMCPRequest(mcpRequest{
+		JSONRPC: "2.0",
+		ID:      float64(2),
+		Method:  "tools/call",
+		Params: map[string]any{
+			"name":      "guild_get_next_mandate",
+			"arguments": map[string]any{},
+		},
+	})
+	result := next.Result.(mcpToolResult)
+	if result.IsError {
+		t.Fatalf("expected get_next success, got %#v", result)
+	}
+	var mandate map[string]any
+	if err := json.Unmarshal([]byte(result.Content[0].Text), &mandate); err != nil {
+		t.Fatal(err)
+	}
+	mandateID := mandate["taskpack_id"].(string)
+
+	claim := handleMCPRequest(mcpRequest{
+		JSONRPC: "2.0",
+		ID:      float64(3),
+		Method:  "tools/call",
+		Params: map[string]any{
+			"name": "guild_claim_mandate",
+			"arguments": map[string]any{
+				"taskpack_id": mandateID,
+				"agent":       "mcp-test",
+				"ttl_minutes": float64(10),
+			},
+		},
+	})
+	claimResult := claim.Result.(mcpToolResult)
+	if claimResult.IsError {
+		t.Fatalf("expected claim success, got %#v", claimResult)
+	}
+	if !strings.Contains(claimResult.Content[0].Text, "mcp-test") {
+		t.Fatalf("expected mcp-test claim, got %s", claimResult.Content[0].Text)
+	}
+}
+
+func doctorHasCheck(report agentDeskDoctorReport, name, status string) bool {
+	for _, check := range report.Checks {
+		if check.Name == name && check.Status == status {
+			return true
+		}
+	}
+	return false
+}
+
 func newConformanceServer(t *testing.T) *httptest.Server {
 	t.Helper()
 	mux := http.NewServeMux()

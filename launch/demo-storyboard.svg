@@ -11,7 +11,7 @@
   </defs>
   <rect width="1200" height="675" fill="url(#bg)"/>
   <text x="60" y="82" fill="#17211b" font-size="46" font-family="Georgia,serif" font-weight="700">Guild</text>
-  <text x="60" y="124" fill="#35443a" font-size="24" font-family="Verdana,sans-serif">The institution layer for AI teams</text>
+  <text x="60" y="124" fill="#35443a" font-size="24" font-family="Verdana,sans-serif">Every agent run starts with a mandate and ends with proof</text>
   <g font-family="Verdana,sans-serif" font-size="18" text-anchor="middle">
     <g transform="translate(85 210)" filter="url(#shadow)">
       <rect width="150" height="110" rx="20" fill="#17211b"/>

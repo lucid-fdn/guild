@@ -26,6 +26,7 @@ Usage:
   guild replay-export --base-url http://localhost:8080 --taskpack-id <uuid> [--file replay.json]
   guild replay-suite --base-url http://localhost:8080 --suite examples/replay-suite.example.json
   guild eval-submit --base-url http://localhost:8080 --suite examples/replay-suite.example.json [--wait]
+  guild mcp serve
   guild agentdesk init
   guild agentdesk mandate create "Fix failing auth tests"
   guild agentdesk next
@@ -44,6 +45,7 @@ Commands:
   replay-export Export a replay bundle for one taskpack
   replay-suite  Run a replay/evaluation suite and propose a promotion candidate
   eval-submit   Queue a replay/evaluation job through the control plane
+  mcp           Run the AgentDesk MCP stdio server
   agentdesk     Local-first mandate, preflight, proof, and replay workflow for agents
 `
 
@@ -71,6 +73,8 @@ func run(args []string, stdout, stderr io.Writer) error {
 		return runReplaySuite(args[1:], stdout)
 	case "eval-submit":
 		return runEvalSubmit(args[1:], stdout)
+	case "mcp":
+		return runMCP(args[1:], stdout, stderr)
 	case "agentdesk":
 		return runAgentDesk(args[1:], stdout, stderr)
 	case "help", "-h", "--help":

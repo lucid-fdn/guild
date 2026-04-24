@@ -2,75 +2,76 @@
 
 ## 0:00 - Problem
 
-"Most multi-agent demos show agents talking. Guild shows agents becoming a team."
+"Agents already get tasks from humans, but the handoff is mushy. A GitHub issue says what to do. It rarely says what the agent may touch, when it must stop, or what proof makes the work complete."
 
-## 0:10 - Task Ownership
+## 0:10 - Issue To Mandate
 
-"We start with a Taskpack: one bounded unit of work. Guild assigns exactly one DRI, so accountability is explicit."
-
-Command:
-
-```bash
-make run-server
-```
-
-## 0:25 - Artifacts
-
-"The DRI does not leave a transcript as the source of truth. It publishes durable artifacts with provenance."
-
-Open:
-
-```text
-GET /api/v1/artifacts
-```
-
-## 0:40 - Replay
-
-"Now we export the run as a replay bundle. This includes the task tree, DRI bindings, artifacts, and promotion evidence."
+"Guild turns an issue labeled `agent:ready` into a mandate an agent can consume."
 
 Command:
 
 ```bash
-go run ./cli/cmd/guild replay-export \
-  --base-url http://localhost:8080 \
-  --taskpack-id 4e1fe00c-6303-453c-8cb6-2c34f84896e4
+guild agentdesk next --source github --repo lucid-fdn/guild
 ```
 
-## 0:55 - Evaluation
+## 0:25 - Claim
 
-"A replay suite creates benchmark evidence and a skill candidate. This is learning off the hot path."
+"The agent claims the mandate, so two agents do not silently work the same task."
 
 Command:
 
 ```bash
-go run ./cli/cmd/guild eval-submit \
-  --base-url http://localhost:8080 \
-  --suite examples/replay-suite.example.json \
-  --wait
+guild agentdesk claim --id <mandate-id> --agent codex
 ```
 
-## 1:10 - Governance
+## 0:35 - Guardrails
 
-"The candidate cannot enter the commons automatically. A policy, promotion gate, and approval request make institutional learning governed."
+"Before editing, the agent checks scope and compiles bounded context instead of inhaling the whole repo."
 
-Open:
+Command:
 
-```text
-GET /api/v1/governance-policies
-GET /api/v1/promotion-gates
-GET /api/v1/approval-requests
+```bash
+guild agentdesk context compile --id <mandate-id> --role coder
+guild agentdesk preflight --id <mandate-id> --action write --path docs/demo.md
 ```
 
-## 1:25 - Commons
+## 0:50 - Proof
 
-"Once approved, the learning becomes a commons entry: reusable institutional memory."
+"The run ends with proof: tests, changed files, and a handoff summary. Not vibes. Not transcript archaeology."
 
-Open:
+Command:
 
-```text
-GET /api/v1/commons-entries
+```bash
+guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
+guild agentdesk proof add --id <mandate-id> --kind changed_files --path changed-files.json
+guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+```
+
+## 1:05 - Verify
+
+"CI verifies the Agent Work Contract and posts the report back to the PR."
+
+Command:
+
+```bash
+guild agentdesk verify --id <mandate-id> --github-report
+```
+
+## 1:20 - Replay
+
+"Anyone can export the replay bundle later and inspect mandate, claim, approvals, proof, and handoff."
+
+Command:
+
+```bash
+guild agentdesk replay export --id <mandate-id>
 ```
 
 ## 1:30 - Close
 
-"Guild is not another orchestrator. It is the institutional layer for AI teams."
+"Guild is not another orchestrator. It is the work contract agents consume before, during, and after work."
+
+## Real Proof
+
+- Demo PR: https://github.com/lucid-fdn/guild/pull/9
+- Agent Work Contract comment: https://github.com/lucid-fdn/guild/pull/9#issuecomment-4316590055

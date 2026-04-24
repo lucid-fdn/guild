@@ -12,6 +12,16 @@ Every agent run starts with a mandate and ends with proof.
 
 ## Install
 
+Public alpha install:
+
+```bash
+go install github.com/lucid-fdn/guild/cli/cmd/guild@latest
+guild agentdesk init
+guild agentdesk doctor
+```
+
+Repo development install:
+
 ```bash
 corepack enable
 make install
@@ -32,9 +42,20 @@ go run ./cli/cmd/guild agentdesk preflight --id <mandate-id> --action write --pa
 go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
 go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind changed_files --path changed-files.json
 go run ./cli/cmd/guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+go run ./cli/cmd/guild agentdesk doctor --id <mandate-id>
 go run ./cli/cmd/guild agentdesk verify --id <mandate-id>
 go run ./cli/cmd/guild agentdesk replay export --id <mandate-id>
 ```
+
+## Connect An MCP Host
+
+Use the single binary from any initialized workspace:
+
+```bash
+guild mcp serve
+```
+
+Claude Desktop, Codex, OpenFang, OpenClaw, and generic MCP host examples are in [MCP Setup](MCP_SETUP.md).
 
 ## Run The Shared API
 
@@ -69,7 +90,7 @@ The UI shows task ownership, artifacts, replay state, approvals, promotion gates
 
 ## Run The Real Simulation
 
-The fastest way to verify the full institutional loop is:
+The fastest way to verify the full agent work-contract loop is:
 
 ```bash
 make simulation

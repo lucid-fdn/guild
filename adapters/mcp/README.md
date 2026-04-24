@@ -5,7 +5,8 @@
 Package: `@guild/adapter-mcp`
 
 This package exposes Guild AgentDesk to MCP-aware environments.
-It includes both reusable MCP tool definitions and an executable local MCP server that wraps a repo's `agentdesk.yaml` and `.agentdesk/` directory.
+For users, the preferred alpha install path is the single Go binary: `guild mcp serve`.
+This TypeScript package remains useful for adapter development, embedding MCP tool definitions, and testing host compatibility.
 
 For copy-paste Claude, Codex, OpenFang, OpenClaw, and generic MCP host configs, see [MCP Setup](../../docs/MCP_SETUP.md).
 
@@ -31,7 +32,7 @@ The adapter is considered useful only when it can create valid mandates, compile
 Run from a workspace that has already been initialized with `guild agentdesk init`:
 
 ```bash
-corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+guild mcp serve
 ```
 
 Example host configuration:
@@ -40,9 +41,10 @@ Example host configuration:
 {
   "mcpServers": {
     "guild-agentdesk": {
-      "command": "guild-agentdesk-mcp",
+      "command": "guild",
+      "args": ["mcp", "serve"],
       "env": {
-        "GUILD_CLI": "guild"
+        "GITHUB_REPOSITORY": "lucid-fdn/guild"
       }
     }
   }
@@ -51,7 +53,6 @@ Example host configuration:
 
 Useful environment variables:
 
-- `GUILD_CLI`: command used to invoke the Guild CLI, for example `guild` or `go run /path/to/guild/cli/cmd/guild`
 - `GUILD_AGENTDESK_SOURCE`: set to `github` to pull mandates from GitHub Issues
 - `GITHUB_TOKEN`: token used by the GitHub source adapter
 - `GITHUB_REPOSITORY`: default `owner/repo` for GitHub source ingestion
@@ -71,6 +72,12 @@ The v1 alpha bridge exports:
 - `createGuildMcpBridge(client)`: convenience factory for host integration
 - `LocalAgentDeskClient`: a CLI-backed client for `agentdesk.yaml` and `.agentdesk/`
 - `guild-agentdesk-mcp`: an executable local MCP server
+
+The TypeScript executable remains available for package-level testing:
+
+```bash
+GUILD_CLI="guild" corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+```
 
 Supported tools:
 

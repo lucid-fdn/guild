@@ -41,6 +41,30 @@ type githubLabel struct {
 	Name string `json:"name"`
 }
 
+func fetchGitHubLabelNames(repo string) ([]string, error) {
+	apiURL := strings.TrimRight(envOr("GITHUB_API_URL", "https://api.github.com"), "/")
+	endpoint := apiURL + "/repos/" + repo + "/labels?per_page=100"
+	request, err := http.NewRequest(http.MethodGet, endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	setGitHubHeaders(request)
+	response, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(io.LimitReader(response.Body, 4096))
+		return nil, fmt.Errorf("GitHub labels request failed with %d: %s", response.StatusCode, strings.TrimSpace(string(body)))
+	}
+	var labels []githubLabel
+	if err := json.NewDecoder(response.Body).Decode(&labels); err != nil {
+		return nil, err
+	}
+	return githubLabelNames(labels), nil
+}
+
 type githubUser struct {
 	Login string `json:"login"`
 }

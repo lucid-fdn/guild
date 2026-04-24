@@ -24,6 +24,7 @@ const agentDeskUsage = `Guild AgentDesk
 
 Usage:
   guild agentdesk init
+  guild agentdesk doctor [--id <uuid>] [--repo owner/repo]
   guild agentdesk mandate create "Fix failing auth tests"
   guild agentdesk mandate show --id <uuid>
   guild agentdesk next [--source local|github] [--repo owner/repo] [--include-claimed]
@@ -47,6 +48,8 @@ func runAgentDesk(args []string, stdout, stderr io.Writer) error {
 	switch args[0] {
 	case "init":
 		return runAgentDeskInit(args[1:], stdout)
+	case "doctor":
+		return runAgentDeskDoctor(args[1:], stdout)
 	case "mandate":
 		return runAgentDeskMandate(args[1:], stdout, stderr)
 	case "next":
