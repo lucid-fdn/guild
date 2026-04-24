@@ -1,0 +1,26 @@
+{
+  "schema_version": "v1alpha1",
+  "artifact_id": "8408b9ad-d382-42aa-bd04-56a5d09755ab",
+  "taskpack_id": "620d256b-fbe8-5e36-a773-85fe6ea936da",
+  "kind": "changed_files",
+  "title": "changed-files.json",
+  "summary": "Demo PR changed docs/DEMO_AGENT_WORK_CONTRACT.md.",
+  "producer": {
+    "actor_id": "92a079cc-0ec9-41a2-b686-62f9161a6f87",
+    "actor_type": "agent",
+    "display_name": "agentdesk-cli",
+    "orchestrator": "agentdesk"
+  },
+  "storage": {
+    "uri": "file:///Users/quentinbrosseau/Documents/Codex/2026-04-24-you-re-an-expert-in-ai/guild/.agentdesk/dogfood/changed-files.json",
+    "mime_type": "application/json",
+    "sha256": "bbb6732db55f2ebc78bf1b76d7069aeb23af62168b87c9c3874982a9426008db",
+    "size_bytes": 37
+  },
+  "labels": [
+    "agentdesk",
+    "proof"
+  ],
+  "version": 1,
+  "created_at": "2026-04-24T21:40:33Z"
+}

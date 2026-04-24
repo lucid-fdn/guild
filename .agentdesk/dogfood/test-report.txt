@@ -1,0 +1,5 @@
+
+> guild@0.1.0 lint:docs /Users/quentinbrosseau/Documents/Codex/2026-04-24-you-re-an-expert-in-ai/guild
+> node scripts/check-doc-links.mjs
+
+ok 38 markdown files
