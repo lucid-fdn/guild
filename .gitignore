@@ -6,6 +6,7 @@ build/
 .next/
 .turbo/
 coverage/
+*.tsbuildinfo
 tmp/
 .env
 .env.local
