@@ -1,0 +1,66 @@
+{
+  "schema_version": "v1alpha1",
+  "taskpack_id": "620d256b-fbe8-5e36-a773-85fe6ea936da",
+  "title": "Dogfood Agent Work Contract PR check",
+  "objective": "Dogfood Agent Work Contract PR check\n\nSource issue:\nUse this issue to verify the GitHub Actions / PR-report copy around agentdesk verify.\\n\\nAcceptance:\\n- README explains agentdesk verify --github-report.\\n- workflow exists under .github/workflows.\\n- report language includes Agent Work Contract: passed, proof, approvals, and replay.",
+  "task_type": "implementation",
+  "priority": "medium",
+  "requested_by": {
+    "actor_id": "54b645e4-a804-5b97-b354-51d07bf81819",
+    "actor_type": "human",
+    "display_name": "daishizenSensei",
+    "orchestrator": "github",
+    "endpoint": "https://github.com/lucid-fdn/guild"
+  },
+  "role_hint": "builder",
+  "references": [
+    "https://github.com/lucid-fdn/guild/issues/3"
+  ],
+  "labels": [
+    "agentdesk",
+    "github",
+    "issue-3",
+    "agent-ready",
+    "priority-p2",
+    "scope-docs"
+  ],
+  "context_budget": {
+    "max_input_tokens": 12000,
+    "max_output_tokens": 1024,
+    "context_strategy": "artifact_refs_first"
+  },
+  "permissions": {
+    "allow_network": false,
+    "allow_shell": true,
+    "allow_external_write": false,
+    "approval_mode": "ask",
+    "scopes": [
+      "src/**",
+      "tests/**",
+      "docs/**"
+    ]
+  },
+  "acceptance_criteria": [
+    {
+      "criterion_id": "criterion_01",
+      "description": "Tests pass or failure is explained.",
+      "required": true
+    },
+    {
+      "criterion_id": "criterion_02",
+      "description": "Every modified file is listed.",
+      "required": true
+    },
+    {
+      "criterion_id": "criterion_03",
+      "description": "A proof artifact is attached.",
+      "required": true
+    },
+    {
+      "criterion_id": "criterion_04",
+      "description": "A reviewer handoff is created.",
+      "required": true
+    }
+  ],
+  "created_at": "2026-04-24T21:21:01Z"
+}
