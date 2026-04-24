@@ -1,10 +1,15 @@
 name: Agent Work Contract
 
 on:
+  pull_request:
+    paths:
+      - ".agentdesk/**"
+      - "agentdesk.yaml"
+      - ".github/workflows/agent-work-contract.yml"
   workflow_call:
     inputs:
       mandate_id:
-        required: true
+        required: false
         type: string
       replay_file:
         required: false
@@ -36,19 +41,41 @@ jobs:
         with:
           go-version: "1.23.0"
       - run: go build -o guild ./cli/cmd/guild
+      - name: Resolve mandate
+        id: mandate
+        env:
+          INPUT_MANDATE_ID: ${{ inputs.mandate_id }}
+        run: |
+          if [[ -n "${INPUT_MANDATE_ID}" ]]; then
+            echo "mandate_id=${INPUT_MANDATE_ID}" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          mandate_file="$(find .agentdesk/mandates -name '*.json' -type f | sort | head -n 1 || true)"
+          if [[ -z "${mandate_file}" ]]; then
+            echo "No AgentDesk mandate found. Commit .agentdesk/mandates/<id>.json or pass mandate_id." >&2
+            exit 1
+          fi
+          mandate_id="$(node -e 'const fs=require("fs"); const p=process.argv[1]; process.stdout.write(JSON.parse(fs.readFileSync(p, "utf8")).taskpack_id)' "${mandate_file}")"
+          echo "mandate_id=${mandate_id}" >> "${GITHUB_OUTPUT}"
       - name: Export replay bundle
         env:
-          MANDATE_ID: ${{ inputs.mandate_id }}
+          MANDATE_ID: ${{ steps.mandate.outputs.mandate_id }}
           REPLAY_FILE: ${{ inputs.replay_file }}
         run: |
+          if [[ -z "${REPLAY_FILE}" ]]; then
+            REPLAY_FILE=".agentdesk/replay/replay.json"
+          fi
           mkdir -p "$(dirname "${REPLAY_FILE}")"
           ./guild agentdesk replay export --id "${MANDATE_ID}" --file "${REPLAY_FILE}"
       - name: Verify agent work contract
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MANDATE_ID: ${{ inputs.mandate_id }}
+          MANDATE_ID: ${{ steps.mandate.outputs.mandate_id }}
           REPLAY_FILE: ${{ inputs.replay_file }}
         run: |
+          if [[ -z "${REPLAY_FILE}" ]]; then
+            REPLAY_FILE=".agentdesk/replay/replay.json"
+          fi
           ./guild agentdesk verify \
             --id "${MANDATE_ID}" \
             --github-report \

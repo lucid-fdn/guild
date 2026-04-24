@@ -1,5 +1,10 @@
 # Guild
 
+[![CI](https://github.com/lucid-fdn/guild/actions/workflows/ci.yml/badge.svg)](https://github.com/lucid-fdn/guild/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Go install](https://img.shields.io/badge/go%20install-github.com%2Flucid--fdn%2Fguild-blue)](#install)
+[![MCP server](https://img.shields.io/badge/MCP-guild--agentdesk--mcp-black)](docs/MCP_SETUP.md)
+
 Every agent run starts with a mandate and ends with proof.
 
 ![Guild demo](launch/demo.gif)
@@ -31,12 +36,36 @@ GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proo
 
 ## Start Here
 
+- Install the CLI with `go install github.com/lucid-fdn/guild/cli/cmd/guild@latest`.
 - Run [AgentDesk](#agentdesk-local-agent-workflow) locally with no server.
 - Point agents at the executable [MCP server](adapters/mcp/README.md) with copy-paste [host setup](docs/MCP_SETUP.md).
 - Turn GitHub issues labeled `agent:ready` into mandates.
 - Use `agentdesk verify --github-report` as a PR check.
 - Run `make release-check` before shipping.
 - Read the [Agent-First Pivot Plan](docs/AGENT_FIRST_PIVOT_PLAN.md) for the product thesis.
+
+## Install
+
+Alpha install path:
+
+```bash
+go install github.com/lucid-fdn/guild/cli/cmd/guild@latest
+guild agentdesk init
+```
+
+Repo-local MCP server path:
+
+```bash
+git clone https://github.com/lucid-fdn/guild.git
+cd guild
+corepack enable
+corepack pnpm install --frozen-lockfile
+go build -o bin/guild ./cli/cmd/guild
+GUILD_CLI="$(pwd)/bin/guild" corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+```
+
+Packaging decision for the public alpha: use `go install` for the CLI and the repo-local MCP executable for host integration.
+Do not publish an npm package until the final package scope/name is stable.
 
 ## Why This Exists
 

@@ -1,0 +1,54 @@
+name: Agent-ready mandate
+description: Create a task that an autonomous agent can claim through Guild AgentDesk.
+title: "[agent] "
+labels:
+  - agent:ready
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template when the task is ready for an agent to claim.
+        A good mandate has a clear objective, bounded scope, acceptance criteria, and proof expectations.
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What should the agent accomplish?
+      placeholder: "Update the MCP setup docs so a new agent can connect in under 90 seconds."
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Allowed scope
+      description: Which files or directories may the agent read/write?
+      placeholder: "docs/**, adapters/mcp/**"
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: What proof is required before the mandate is done?
+      value: |
+        - Tests pass or failure is explained.
+        - Every modified file is listed.
+        - A proof artifact is attached.
+        - A reviewer handoff is created.
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - priority:p1
+        - priority:p2
+        - priority:p3
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes for the agent
+      description: Add constraints, links, risks, or reviewer preferences.
