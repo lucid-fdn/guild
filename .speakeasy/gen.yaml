@@ -1,0 +1,21 @@
+configVersion: 2.0.0
+generation:
+  sdkClassName: Guild
+  maintainOpenAPIOrder: true
+  usageSnippets:
+    optionalPropertyRendering: withExample
+  fixes:
+    nameResolutionDec2023: true
+    parameterOrderingFeb2024: true
+    requestResponseComponentNamesFeb2024: true
+    securityFeb2025: true
+    nameOverrideFeb2026: true
+  versioningStrategy: manual
+typescript:
+  version: 0.1.0
+  packageName: "@guild/client"
+  author: Guild
+python:
+  version: 0.1.0
+  packageName: guild-client
+  author: Guild

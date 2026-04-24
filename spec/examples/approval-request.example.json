@@ -1,0 +1,29 @@
+{
+  "schema_version": "v1alpha1",
+  "approval_id": "8b63fd74-7e42-4c2a-aed1-d39a628d8988",
+  "taskpack_id": "4e1fe00c-6303-453c-8cb6-2c34f84896e4",
+  "policy_id": "cd542e3e-41b0-46a0-b1f2-b27af9eb9fe4",
+  "requested_by": {
+    "actor_id": "0a3657eb-2f37-4614-a8a7-9c6bd51714a8",
+    "actor_type": "agent",
+    "display_name": "payments-dri",
+    "orchestrator": "langgraph"
+  },
+  "reason": "Promote the retry-audit heuristic into the institution commons.",
+  "required_approvals": 1,
+  "approvals": [
+    {
+      "actor": {
+        "actor_id": "52a203e8-0a20-4f0b-9b3d-78631e00d6ab",
+        "actor_type": "human",
+        "display_name": "Quentin"
+      },
+      "decision": "approved",
+      "reason": "Replay benchmark improved and no policy regression was observed.",
+      "decided_at": "2026-04-24T11:05:00Z"
+    }
+  ],
+  "status": "approved",
+  "created_at": "2026-04-24T11:01:00Z",
+  "decided_at": "2026-04-24T11:05:00Z"
+}

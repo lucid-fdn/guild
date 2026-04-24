@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1alpha1",
+  "commons_entry_id": "dcb55b43-d39f-4d49-8b0f-54b4ef68f73e",
+  "institution_id": "5d3dca03-89a0-4fb0-99ee-5f39ef5a6f0c",
+  "promotion_record_id": "b2ddb0dd-b29c-4a28-b1ba-e9a2f8ff23fb",
+  "title": "Check retries for duplicate side effects",
+  "summary": "When auditing webhook retry paths, inspect timeout recovery for non-idempotent side effects before acknowledging success.",
+  "artifact_ref": {
+    "artifact_id": "5d19ef0f-31b5-4709-a66b-da2d3bb4a731",
+    "kind": "review",
+    "uri": "s3://guild/artifacts/tasks/4e1fe00c-6303-453c-8cb6-2c34f84896e4/findings.md",
+    "version": 1
+  },
+  "scope": "institution",
+  "status": "active",
+  "created_at": "2026-04-24T11:10:00Z"
+}

@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guild.dev/spec/promotion-record.schema.json",
+  "title": "Promotion Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "promotion_record_id",
+    "institution_id",
+    "candidate_kind",
+    "candidate_ref",
+    "decision",
+    "decided_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "v1alpha1"
+    },
+    "promotion_record_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "institution_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "candidate_kind": {
+      "type": "string",
+      "enum": [
+        "skill",
+        "rule",
+        "prompt_pattern",
+        "workflow_pattern",
+        "review_heuristic"
+      ]
+    },
+    "candidate_ref": {
+      "$ref": "common.schema.json#/$defs/artifactRef"
+    },
+    "source_run_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/uuid"
+      }
+    },
+    "benchmark_suite": {
+      "type": "string"
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/metricDelta"
+      }
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "rejected",
+        "needs_human_review",
+        "deferred"
+      ]
+    },
+    "decision_reason": {
+      "type": "string"
+    },
+    "deciders": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/actorRef"
+      }
+    },
+    "accepted_scope": {
+      "type": "string",
+      "enum": [
+        "institution",
+        "team",
+        "project",
+        "role_specific"
+      ]
+    },
+    "decided_at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    }
+  }
+}
+

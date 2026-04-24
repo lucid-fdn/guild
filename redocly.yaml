@@ -1,0 +1,10 @@
+extends:
+  - recommended
+
+apis:
+  guild@v1alpha1:
+    root: openapi/guild.v1alpha1.yaml
+
+rules:
+  no-server-example.com: off
+  operation-4xx-response: error

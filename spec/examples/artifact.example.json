@@ -1,0 +1,43 @@
+{
+  "schema_version": "v1alpha1",
+  "artifact_id": "5d19ef0f-31b5-4709-a66b-da2d3bb4a731",
+  "taskpack_id": "4e1fe00c-6303-453c-8cb6-2c34f84896e4",
+  "parent_artifact_ids": [],
+  "kind": "review",
+  "title": "Webhook retry audit findings",
+  "summary": "Identifies duplicate side effects in timeout retry handling and proposes an idempotency guard.",
+  "producer": {
+    "actor_id": "0a3657eb-2f37-4614-a8a7-9c6bd51714a8",
+    "actor_type": "agent",
+    "display_name": "payments-dri",
+    "orchestrator": "langgraph",
+    "model": "anthropic:claude-sonnet-4"
+  },
+  "storage": {
+    "uri": "s3://guild/artifacts/tasks/4e1fe00c-6303-453c-8cb6-2c34f84896e4/findings.md",
+    "mime_type": "text/markdown",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "size_bytes": 4821
+  },
+  "lineage": {
+    "trace_id": "a22fb6f0ff0bd4f8a6ef9173fbe80df4",
+    "run_id": "9644f432-eeb5-443f-b7ea-f0aab64ad679",
+    "source_taskpack_ids": [
+      "4e1fe00c-6303-453c-8cb6-2c34f84896e4"
+    ]
+  },
+  "evaluation_state": {
+    "status": "passed",
+    "score": 0.91,
+    "benchmark_suite": "payments-reliability-v1"
+  },
+  "labels": [
+    "payments",
+    "audit",
+    "review"
+  ],
+  "security_classification": "internal",
+  "version": 1,
+  "created_at": "2026-04-24T10:15:00Z"
+}
+

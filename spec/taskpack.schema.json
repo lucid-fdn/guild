@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guild.dev/spec/taskpack.schema.json",
+  "title": "Taskpack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "taskpack_id",
+    "title",
+    "objective",
+    "created_at",
+    "requested_by",
+    "priority",
+    "task_type",
+    "context_budget",
+    "permissions",
+    "acceptance_criteria"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "v1alpha1"
+    },
+    "taskpack_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "institution_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "parent_taskpack_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "title": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "objective": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "problem_statement": {
+      "type": "string"
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "analysis",
+        "implementation",
+        "review",
+        "research",
+        "triage",
+        "evaluation",
+        "operations",
+        "custom"
+      ]
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "requested_by": {
+      "$ref": "common.schema.json#/$defs/actorRef"
+    },
+    "role_hint": {
+      "type": "string",
+      "enum": [
+        "dri",
+        "explorer",
+        "builder",
+        "skeptic",
+        "reviewer",
+        "specialist",
+        "approver"
+      ]
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/artifactRef"
+      },
+      "default": []
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "default": []
+    },
+    "labels": {
+      "$ref": "common.schema.json#/$defs/labels"
+    },
+    "context_budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_input_tokens",
+        "max_output_tokens",
+        "context_strategy"
+      ],
+      "properties": {
+        "max_input_tokens": {
+          "type": "integer",
+          "minimum": 256
+        },
+        "max_output_tokens": {
+          "type": "integer",
+          "minimum": 128
+        },
+        "context_strategy": {
+          "type": "string",
+          "enum": [
+            "artifact_refs_first",
+            "summary_plus_refs",
+            "full_bundle"
+          ]
+        },
+        "max_artifacts_inline": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "must_not": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "must_include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deadline_at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "cost_ceiling_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "tool_allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allow_network",
+        "allow_shell",
+        "allow_external_write",
+        "approval_mode"
+      ],
+      "properties": {
+        "allow_network": {
+          "type": "boolean"
+        },
+        "allow_shell": {
+          "type": "boolean"
+        },
+        "allow_external_write": {
+          "type": "boolean"
+        },
+        "approval_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "ask",
+            "required"
+          ]
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "criterion_id",
+          "description"
+        ],
+        "properties": {
+          "criterion_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]{1,31}$"
+          },
+          "description": {
+            "$ref": "common.schema.json#/$defs/nonEmptyString"
+          },
+          "required": {
+            "type": "boolean",
+            "default": true
+          },
+          "verification_hint": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "delegation_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allow_subtasks": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_depth": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "max_parallel_subtasks": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      }
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "trace_id": {
+      "type": "string"
+    }
+  }
+}
+

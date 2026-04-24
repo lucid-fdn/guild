@@ -1,0 +1,25 @@
+{
+  "schema_version": "v1alpha1",
+  "adapter_id": "a2a",
+  "adapter_name": "Guild A2A Adapter",
+  "package": "@guild/adapter-a2a",
+  "profile": "adapter-alpha",
+  "orchestrator": "A2A transport",
+  "capabilities": [
+    "taskpack.create",
+    "dri.assign",
+    "artifact.publish",
+    "transport.map"
+  ],
+  "required_checks": [
+    "schemas.closed",
+    "taskpack.valid",
+    "dri.single_owner",
+    "artifact.provenance",
+    "tests.local"
+  ],
+  "badge": {
+    "label": "Guild adapter-alpha",
+    "url": "../badges/guild-adapter-alpha.svg"
+  }
+}

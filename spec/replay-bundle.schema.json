@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guild.dev/spec/replay-bundle.schema.json",
+  "title": "Replay Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "taskpack",
+    "dri_bindings",
+    "artifacts",
+    "promotion_records"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "v1alpha1"
+    },
+    "root_taskpack_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "taskpack": {
+      "$ref": "taskpack.schema.json"
+    },
+    "taskpacks": {
+      "type": "array",
+      "items": {
+        "$ref": "taskpack.schema.json"
+      }
+    },
+    "dri_bindings": {
+      "type": "array",
+      "items": {
+        "$ref": "dri-binding.schema.json"
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "artifact.schema.json"
+      }
+    },
+    "promotion_records": {
+      "type": "array",
+      "items": {
+        "$ref": "promotion-record.schema.json"
+      }
+    }
+  }
+}

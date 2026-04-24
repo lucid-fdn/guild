@@ -1,0 +1,17 @@
+{
+  "name": "one-task-one-dri-commons",
+  "story": "One task, one DRI, durable artifacts, replay, human approval, promoted learning.",
+  "records": [
+    "taskpack",
+    "dri_binding",
+    "artifact",
+    "replay_bundle",
+    "governance_policy",
+    "approval_request",
+    "promotion_gate",
+    "promotion_record",
+    "commons_entry"
+  ],
+  "root_taskpack_id": "4e1fe00c-6303-453c-8cb6-2c34f84896e4",
+  "verification": "make simulation"
+}

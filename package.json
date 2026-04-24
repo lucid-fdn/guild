@@ -1,0 +1,22 @@
+{
+  "name": "guild",
+  "private": true,
+  "version": "0.1.0",
+  "description": "The orchestrator-agnostic institution layer for AI teams.",
+  "packageManager": "pnpm@10.8.0",
+  "scripts": {
+    "check:typescript-spec": "node scripts/generate-typescript-spec.mjs --check",
+    "lint:docs": "node scripts/check-doc-links.mjs",
+    "lint:adapter-profiles": "node scripts/validate-adapter-profiles.mjs",
+    "lint:fixtures": "node scripts/validate-fixture-refs.mjs",
+    "generate:typescript-spec": "node scripts/generate-typescript-spec.mjs",
+    "lint:openapi": "redocly lint openapi/guild.v1alpha1.yaml",
+    "lint:spec": "node scripts/validate-spec.mjs"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^2.29.2",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "json-schema-to-typescript": "^15.0.4"
+  }
+}

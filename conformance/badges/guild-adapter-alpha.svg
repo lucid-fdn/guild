@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="176" height="20" role="img" aria-label="Guild: adapter-alpha">
+  <title>Guild: adapter-alpha</title>
+  <linearGradient id="s" x2="0" y2="100%">
+    <stop offset="0" stop-color="#fff" stop-opacity=".18"/>
+    <stop offset="1" stop-opacity=".18"/>
+  </linearGradient>
+  <clipPath id="r">
+    <rect width="176" height="20" rx="3" fill="#fff"/>
+  </clipPath>
+  <g clip-path="url(#r)">
+    <rect width="52" height="20" fill="#17211b"/>
+    <rect x="52" width="124" height="20" fill="#d96d2b"/>
+    <rect width="176" height="20" fill="url(#s)"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110">
+    <text aria-hidden="true" x="270" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="420">Guild</text>
+    <text x="270" y="140" transform="scale(.1)" fill="#fff" textLength="420">Guild</text>
+    <text aria-hidden="true" x="1130" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="1120">adapter-alpha</text>
+    <text x="1130" y="140" transform="scale(.1)" fill="#fff" textLength="1120">adapter-alpha</text>
+  </g>
+</svg>

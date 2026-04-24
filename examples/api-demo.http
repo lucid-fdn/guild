@@ -1,0 +1,66 @@
+### Guild status
+GET http://localhost:8080/api/v1/status
+
+### List taskpacks
+GET http://localhost:8080/api/v1/taskpacks
+
+### List DRI bindings
+GET http://localhost:8080/api/v1/dri-bindings
+
+### List artifacts
+GET http://localhost:8080/api/v1/artifacts
+
+### List promotion records
+GET http://localhost:8080/api/v1/promotion-records
+
+### List governance policies
+GET http://localhost:8080/api/v1/governance-policies
+
+### List approval requests
+GET http://localhost:8080/api/v1/approval-requests
+
+### List promotion gates
+GET http://localhost:8080/api/v1/promotion-gates
+
+### List commons entries
+GET http://localhost:8080/api/v1/commons-entries
+
+### Export replay bundle
+GET http://localhost:8080/api/v1/replay/taskpacks/4e1fe00c-6303-453c-8cb6-2c34f84896e4
+
+### Create taskpack
+POST http://localhost:8080/api/v1/taskpacks
+Content-Type: application/json
+
+{
+  "schema_version": "v1alpha1",
+  "taskpack_id": "d013e9c3-3fdc-4f72-a79f-3ca30d0fe111",
+  "title": "Review the onboarding email flow",
+  "objective": "Find delivery gaps and propose one concrete improvement.",
+  "task_type": "analysis",
+  "priority": "medium",
+  "requested_by": {
+    "actor_id": "52a203e8-0a20-4f0b-9b3d-78631e00d6ab",
+    "actor_type": "human",
+    "display_name": "Quentin"
+  },
+  "context_budget": {
+    "max_input_tokens": 4000,
+    "max_output_tokens": 1500,
+    "context_strategy": "artifact_refs_first"
+  },
+  "permissions": {
+    "allow_network": false,
+    "allow_shell": false,
+    "allow_external_write": false,
+    "approval_mode": "ask"
+  },
+  "acceptance_criteria": [
+    {
+      "criterion_id": "improvement",
+      "description": "Produce one concrete improvement recommendation.",
+      "required": true
+    }
+  ],
+  "created_at": "2026-04-24T12:00:00Z"
+}

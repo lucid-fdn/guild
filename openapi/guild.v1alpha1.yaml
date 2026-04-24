@@ -1,0 +1,1339 @@
+openapi: 3.1.0
+info:
+  title: Guild Control Plane API
+  version: 0.1.0
+  summary: Orchestrator-agnostic institution layer for AI teams.
+  license:
+    name: MIT
+    identifier: MIT
+  description: |
+    Guild standardizes ownership, bounded handoffs, durable artifacts, and governed learning
+    above agent orchestrators. This OpenAPI document describes the bootstrap control-plane API.
+servers:
+  - url: http://localhost:8080
+    description: Local bootstrap server
+security: []
+tags:
+  - name: Health
+    description: Process health and readiness endpoints.
+  - name: Status
+    description: Control-plane status endpoints.
+  - name: Taskpacks
+    description: Portable bounded work handoff objects.
+  - name: DRI Bindings
+    description: Accountable ownership records for taskpacks.
+  - name: Artifacts
+    description: Durable output and provenance metadata.
+  - name: Promotion Records
+    description: Governed institutional learning decisions.
+  - name: Institution
+    description: Governance policies, human approvals, promotion gates, and commons entries.
+  - name: Replay
+    description: Portable evidence bundles for task replay and evaluation.
+paths:
+  /healthz:
+    get:
+      operationId: getHealth
+      summary: Check server health.
+      tags: [Health]
+      responses:
+        "200":
+          description: Server is healthy.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/status:
+    get:
+      operationId: getStatus
+      summary: Get bootstrap control-plane status.
+      tags: [Status]
+      responses:
+        "200":
+          description: Control-plane status.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/taskpacks:
+    get:
+      operationId: listTaskpacks
+      summary: List taskpacks.
+      tags: [Taskpacks]
+      responses:
+        "200":
+          description: Taskpack list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskpackList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      operationId: createTaskpack
+      summary: Create a taskpack.
+      tags: [Taskpacks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Taskpack"
+      responses:
+        "201":
+          description: Created taskpack.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Taskpack"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/v1/taskpacks/{taskpack_id}:
+    get:
+      operationId: getTaskpack
+      summary: Get a taskpack.
+      tags: [Taskpacks]
+      parameters:
+        - $ref: "#/components/parameters/TaskpackID"
+      responses:
+        "200":
+          description: Taskpack.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Taskpack"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/taskpacks/{taskpack_id}/artifacts:
+    get:
+      operationId: listTaskpackArtifacts
+      summary: List artifacts for a taskpack.
+      tags: [Artifacts]
+      parameters:
+        - $ref: "#/components/parameters/TaskpackID"
+      responses:
+        "200":
+          description: Artifact list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArtifactList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/v1/dri-bindings:
+    get:
+      operationId: listDriBindings
+      summary: List DRI bindings.
+      tags: [DRI Bindings]
+      responses:
+        "200":
+          description: DRI binding list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriBindingList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      operationId: createDriBinding
+      summary: Create a DRI binding.
+      tags: [DRI Bindings]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriBinding"
+      responses:
+        "201":
+          description: Created DRI binding.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriBinding"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/v1/dri-bindings/{dri_binding_id}:
+    get:
+      operationId: getDriBinding
+      summary: Get a DRI binding.
+      tags: [DRI Bindings]
+      parameters:
+        - $ref: "#/components/parameters/DriBindingID"
+      responses:
+        "200":
+          description: DRI binding.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriBinding"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/artifacts:
+    get:
+      operationId: listArtifacts
+      summary: List artifacts.
+      tags: [Artifacts]
+      responses:
+        "200":
+          description: Artifact list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArtifactList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      operationId: createArtifact
+      summary: Create an artifact metadata record.
+      tags: [Artifacts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Artifact"
+      responses:
+        "201":
+          description: Created artifact.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Artifact"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/v1/artifacts/{artifact_id}:
+    get:
+      operationId: getArtifact
+      summary: Get an artifact.
+      tags: [Artifacts]
+      parameters:
+        - $ref: "#/components/parameters/ArtifactID"
+      responses:
+        "200":
+          description: Artifact.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Artifact"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/promotion-records:
+    get:
+      operationId: listPromotionRecords
+      summary: List promotion records.
+      tags: [Promotion Records]
+      responses:
+        "200":
+          description: Promotion record list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromotionRecordList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      operationId: createPromotionRecord
+      summary: Create a promotion record.
+      tags: [Promotion Records]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PromotionRecord"
+      responses:
+        "201":
+          description: Created promotion record.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromotionRecord"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/v1/promotion-records/{promotion_record_id}:
+    get:
+      operationId: getPromotionRecord
+      summary: Get a promotion record.
+      tags: [Promotion Records]
+      parameters:
+        - $ref: "#/components/parameters/PromotionRecordID"
+      responses:
+        "200":
+          description: Promotion record.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromotionRecord"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/governance-policies:
+    get:
+      operationId: listGovernancePolicies
+      summary: List governance policies.
+      tags: [Institution]
+      responses:
+        "200":
+          description: Governance policy list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GovernancePolicyList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      operationId: createGovernancePolicy
+      summary: Create a governance policy.
+      tags: [Institution]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GovernancePolicy"
+      responses:
+        "201":
+          description: Created governance policy.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GovernancePolicy"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/v1/approval-requests:
+    get:
+      operationId: listApprovalRequests
+      summary: List human approval requests.
+      tags: [Institution]
+      responses:
+        "200":
+          description: Approval request list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApprovalRequestList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      operationId: createApprovalRequest
+      summary: Create a human approval request.
+      tags: [Institution]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApprovalRequest"
+      responses:
+        "201":
+          description: Created approval request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApprovalRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/v1/promotion-gates:
+    get:
+      operationId: listPromotionGates
+      summary: List promotion gates.
+      tags: [Institution]
+      responses:
+        "200":
+          description: Promotion gate list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromotionGateList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      operationId: createPromotionGate
+      summary: Create a promotion gate.
+      tags: [Institution]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PromotionGate"
+      responses:
+        "201":
+          description: Created promotion gate.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromotionGate"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/v1/commons-entries:
+    get:
+      operationId: listCommonsEntries
+      summary: List accepted commons entries.
+      tags: [Institution]
+      responses:
+        "200":
+          description: Commons entry list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonsEntryList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      operationId: createCommonsEntry
+      summary: Create a commons registry entry.
+      tags: [Institution]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommonsEntry"
+      responses:
+        "201":
+          description: Created commons entry.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonsEntry"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/v1/replay/taskpacks/{taskpack_id}:
+    get:
+      operationId: exportTaskpackReplayBundle
+      summary: Export a replay bundle for one taskpack.
+      tags: [Replay]
+      parameters:
+        - $ref: "#/components/parameters/TaskpackID"
+      responses:
+        "200":
+          description: Replay bundle.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayBundle"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/evaluation-jobs:
+    get:
+      operationId: listEvaluationJobs
+      summary: List replay/evaluation jobs.
+      tags: [Replay]
+      responses:
+        "200":
+          description: Evaluation job list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationJobList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      operationId: enqueueEvaluationJob
+      summary: Queue a replay/evaluation suite job.
+      tags: [Replay]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplaySuite"
+      responses:
+        "202":
+          description: Queued evaluation job.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationJob"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/v1/evaluation-jobs/{evaluation_job_id}:
+    get:
+      operationId: getEvaluationJob
+      summary: Get a replay/evaluation job.
+      tags: [Replay]
+      parameters:
+        - $ref: "#/components/parameters/EvaluationJobID"
+      responses:
+        "200":
+          description: Evaluation job.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationJob"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/evaluation-jobs/{evaluation_job_id}/run:
+    post:
+      operationId: runEvaluationJob
+      summary: Run one queued replay/evaluation job immediately.
+      tags: [Replay]
+      parameters:
+        - $ref: "#/components/parameters/EvaluationJobID"
+      responses:
+        "200":
+          description: Evaluation job after execution.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationJob"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+components:
+  parameters:
+    TaskpackID:
+      name: taskpack_id
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    DriBindingID:
+      name: dri_binding_id
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    ArtifactID:
+      name: artifact_id
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    PromotionRecordID:
+      name: promotion_record_id
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    EvaluationJobID:
+      name: evaluation_job_id
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+  responses:
+    BadRequest:
+      description: Request failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Record not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InternalServerError:
+      description: Server failed to complete the request.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  schemas:
+    UUID:
+      type: string
+      format: uuid
+    Timestamp:
+      type: string
+      format: date-time
+    URI:
+      type: string
+      format: uri
+    NonEmptyString:
+      type: string
+      minLength: 1
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: string
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required: [status, service]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        service:
+          type: string
+          enum: [guildd]
+    StatusResponse:
+      type: object
+      additionalProperties: false
+      required: [name, version, mode, ui_origin, services]
+      properties:
+        name:
+          type: string
+          enum: [guild]
+        version:
+          type: string
+        mode:
+          type: string
+        ui_origin:
+          type: string
+          format: uri
+        services:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    ActorRef:
+      type: object
+      additionalProperties: false
+      required: [actor_id, actor_type, display_name]
+      properties:
+        actor_id:
+          $ref: "#/components/schemas/UUID"
+        actor_type:
+          type: string
+          enum: [agent, human, service]
+        display_name:
+          $ref: "#/components/schemas/NonEmptyString"
+        orchestrator:
+          type: string
+        model:
+          type: string
+        endpoint:
+          $ref: "#/components/schemas/URI"
+    ArtifactRef:
+      type: object
+      additionalProperties: false
+      required: [artifact_id, kind, uri]
+      properties:
+        artifact_id:
+          $ref: "#/components/schemas/UUID"
+        kind:
+          type: string
+        uri:
+          $ref: "#/components/schemas/URI"
+        version:
+          type: integer
+          minimum: 1
+    Labels:
+      type: array
+      uniqueItems: true
+      items:
+        type: string
+        pattern: ^[a-z0-9][a-z0-9._/-]{0,63}$
+    Taskpack:
+      type: object
+      additionalProperties: false
+      required:
+        - schema_version
+        - taskpack_id
+        - title
+        - objective
+        - created_at
+        - requested_by
+        - priority
+        - task_type
+        - context_budget
+        - permissions
+        - acceptance_criteria
+      properties:
+        schema_version:
+          type: string
+          const: v1alpha1
+        taskpack_id:
+          $ref: "#/components/schemas/UUID"
+        institution_id:
+          $ref: "#/components/schemas/UUID"
+        parent_taskpack_id:
+          $ref: "#/components/schemas/UUID"
+        title:
+          $ref: "#/components/schemas/NonEmptyString"
+        objective:
+          $ref: "#/components/schemas/NonEmptyString"
+        problem_statement:
+          type: string
+        task_type:
+          type: string
+          enum: [analysis, implementation, review, research, triage, evaluation, operations, custom]
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        requested_by:
+          $ref: "#/components/schemas/ActorRef"
+        role_hint:
+          type: string
+          enum: [dri, explorer, builder, skeptic, reviewer, specialist, approver]
+        inputs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtifactRef"
+        references:
+          type: array
+          items:
+            $ref: "#/components/schemas/URI"
+        labels:
+          $ref: "#/components/schemas/Labels"
+        context_budget:
+          type: object
+          additionalProperties: false
+          required: [max_input_tokens, max_output_tokens, context_strategy]
+          properties:
+            max_input_tokens:
+              type: integer
+              minimum: 256
+            max_output_tokens:
+              type: integer
+              minimum: 128
+            context_strategy:
+              type: string
+              enum: [artifact_refs_first, summary_plus_refs, full_bundle]
+            max_artifacts_inline:
+              type: integer
+              minimum: 0
+        constraints:
+          type: object
+          additionalProperties: false
+          properties:
+            must_not:
+              type: array
+              items:
+                type: string
+            must_include:
+              type: array
+              items:
+                type: string
+            deadline_at:
+              $ref: "#/components/schemas/Timestamp"
+            cost_ceiling_usd:
+              type: number
+              minimum: 0
+            tool_allowlist:
+              type: array
+              items:
+                type: string
+        permissions:
+          type: object
+          additionalProperties: false
+          required: [allow_network, allow_shell, allow_external_write, approval_mode]
+          properties:
+            allow_network:
+              type: boolean
+            allow_shell:
+              type: boolean
+            allow_external_write:
+              type: boolean
+            approval_mode:
+              type: string
+              enum: [none, ask, required]
+            scopes:
+              type: array
+              items:
+                type: string
+        acceptance_criteria:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required: [criterion_id, description]
+            properties:
+              criterion_id:
+                type: string
+                pattern: ^[a-z0-9][a-z0-9_-]{1,31}$
+              description:
+                $ref: "#/components/schemas/NonEmptyString"
+              required:
+                type: boolean
+                default: true
+              verification_hint:
+                type: string
+        delegation_policy:
+          type: object
+          additionalProperties: false
+          properties:
+            allow_subtasks:
+              type: boolean
+              default: false
+            max_depth:
+              type: integer
+              minimum: 0
+              default: 0
+            max_parallel_subtasks:
+              type: integer
+              minimum: 1
+              default: 1
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        trace_id:
+          type: string
+    DriBinding:
+      type: object
+      additionalProperties: false
+      required: [schema_version, dri_binding_id, taskpack_id, owner, created_at, status]
+      properties:
+        schema_version:
+          type: string
+          const: v1alpha1
+        dri_binding_id:
+          $ref: "#/components/schemas/UUID"
+        taskpack_id:
+          $ref: "#/components/schemas/UUID"
+        owner:
+          $ref: "#/components/schemas/ActorRef"
+        reviewers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActorRef"
+        specialists:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActorRef"
+        approvers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActorRef"
+        escalation_policy:
+          type: object
+          additionalProperties: false
+          properties:
+            mode:
+              type: string
+              enum: [manual, time_based, policy_based]
+            escalate_after_seconds:
+              type: integer
+              minimum: 0
+            targets:
+              type: array
+              items:
+                $ref: "#/components/schemas/ActorRef"
+        approval_policy:
+          type: object
+          additionalProperties: false
+          properties:
+            required_for:
+              type: array
+              items:
+                type: string
+                enum: [external_write, network, prod_access, cost_overrun, publication]
+            min_approvals:
+              type: integer
+              minimum: 0
+        visibility_policy:
+          type: object
+          additionalProperties: false
+          properties:
+            mode:
+              type: string
+              enum: [team, project, institution, restricted]
+            readers:
+              type: array
+              items:
+                $ref: "#/components/schemas/ActorRef"
+        status:
+          type: string
+          enum: [assigned, accepted, in_progress, blocked, completed, canceled]
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+    Artifact:
+      type: object
+      additionalProperties: false
+      required: [schema_version, artifact_id, taskpack_id, kind, title, producer, storage, created_at, version]
+      properties:
+        schema_version:
+          type: string
+          const: v1alpha1
+        artifact_id:
+          $ref: "#/components/schemas/UUID"
+        taskpack_id:
+          $ref: "#/components/schemas/UUID"
+        parent_artifact_ids:
+          type: array
+          items:
+            $ref: "#/components/schemas/UUID"
+        kind:
+          type: string
+          enum: [report, code_patch, review, plan, dataset, decision_log, benchmark_result, skill_candidate, custom]
+        title:
+          $ref: "#/components/schemas/NonEmptyString"
+        summary:
+          type: string
+        producer:
+          $ref: "#/components/schemas/ActorRef"
+        storage:
+          type: object
+          additionalProperties: false
+          required: [uri, mime_type]
+          properties:
+            uri:
+              $ref: "#/components/schemas/URI"
+            mime_type:
+              type: string
+            sha256:
+              type: string
+              pattern: ^[a-f0-9]{64}$
+            size_bytes:
+              type: integer
+              minimum: 0
+        lineage:
+          type: object
+          additionalProperties: false
+          properties:
+            trace_id:
+              type: string
+            run_id:
+              $ref: "#/components/schemas/UUID"
+            source_taskpack_ids:
+              type: array
+              items:
+                $ref: "#/components/schemas/UUID"
+        evaluation_state:
+          type: object
+          additionalProperties: false
+          properties:
+            status:
+              type: string
+              enum: [not_evaluated, pending, passed, failed]
+            score:
+              type: number
+            benchmark_suite:
+              type: string
+        labels:
+          $ref: "#/components/schemas/Labels"
+        security_classification:
+          type: string
+          enum: [public, internal, restricted]
+          default: internal
+        version:
+          type: integer
+          minimum: 1
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+    MetricDelta:
+      type: object
+      additionalProperties: false
+      required: [name, before, after, direction]
+      properties:
+        name:
+          $ref: "#/components/schemas/NonEmptyString"
+        before:
+          type: number
+        after:
+          type: number
+        direction:
+          type: string
+          enum: [higher_is_better, lower_is_better]
+        unit:
+          type: string
+    PromotionRecord:
+      type: object
+      additionalProperties: false
+      required: [schema_version, promotion_record_id, institution_id, candidate_kind, candidate_ref, decision, decided_at]
+      properties:
+        schema_version:
+          type: string
+          const: v1alpha1
+        promotion_record_id:
+          $ref: "#/components/schemas/UUID"
+        institution_id:
+          $ref: "#/components/schemas/UUID"
+        candidate_kind:
+          type: string
+          enum: [skill, rule, prompt_pattern, workflow_pattern, review_heuristic]
+        candidate_ref:
+          $ref: "#/components/schemas/ArtifactRef"
+        source_run_ids:
+          type: array
+          items:
+            $ref: "#/components/schemas/UUID"
+        benchmark_suite:
+          type: string
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetricDelta"
+        decision:
+          type: string
+          enum: [accepted, rejected, needs_human_review, deferred]
+        decision_reason:
+          type: string
+        deciders:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActorRef"
+        accepted_scope:
+          type: string
+          enum: [institution, team, project, role_specific]
+        decided_at:
+          $ref: "#/components/schemas/Timestamp"
+    ReplayBundle:
+      type: object
+      additionalProperties: false
+      required: [schema_version, taskpack, dri_bindings, artifacts, promotion_records]
+      properties:
+        schema_version:
+          type: string
+          const: v1alpha1
+        root_taskpack_id:
+          $ref: "#/components/schemas/UUID"
+        taskpack:
+          $ref: "#/components/schemas/Taskpack"
+        taskpacks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Taskpack"
+        dri_bindings:
+          type: array
+          items:
+            $ref: "#/components/schemas/DriBinding"
+        artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Artifact"
+        promotion_records:
+          type: array
+          items:
+            $ref: "#/components/schemas/PromotionRecord"
+    ReplaySuite:
+      type: object
+      additionalProperties: false
+      required: [suite_id, name, taskpack_ids, metric_name, before, after, direction]
+      properties:
+        suite_id:
+          type: string
+        name:
+          type: string
+        taskpack_ids:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/UUID"
+        metric_name:
+          type: string
+        before:
+          type: number
+        after:
+          type: number
+        direction:
+          type: string
+          enum: [higher_is_better, lower_is_better]
+    EvaluationJob:
+      type: object
+      additionalProperties: false
+      required: [schema_version, evaluation_job_id, status, suite, attempts, max_attempts, queued_at, created_at, updated_at]
+      properties:
+        schema_version:
+          type: string
+          const: v1alpha1
+        evaluation_job_id:
+          $ref: "#/components/schemas/UUID"
+        status:
+          type: string
+          enum: [queued, running, succeeded, failed]
+        suite:
+          $ref: "#/components/schemas/ReplaySuite"
+        attempts:
+          type: integer
+          minimum: 0
+        max_attempts:
+          type: integer
+          minimum: 1
+        error:
+          type: string
+        benchmark_artifact_id:
+          $ref: "#/components/schemas/UUID"
+        candidate_artifact_id:
+          $ref: "#/components/schemas/UUID"
+        promotion_record_id:
+          $ref: "#/components/schemas/UUID"
+        queued_at:
+          $ref: "#/components/schemas/Timestamp"
+        started_at:
+          $ref: "#/components/schemas/Timestamp"
+        completed_at:
+          $ref: "#/components/schemas/Timestamp"
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
+    GovernancePolicy:
+      type: object
+      additionalProperties: false
+      required: [schema_version, policy_id, institution_id, name, applies_to, rules, created_at]
+      properties:
+        schema_version:
+          type: string
+          const: v1alpha1
+        policy_id:
+          $ref: "#/components/schemas/UUID"
+        institution_id:
+          $ref: "#/components/schemas/UUID"
+        name:
+          $ref: "#/components/schemas/NonEmptyString"
+        description:
+          type: string
+        applies_to:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [taskpack, artifact, promotion_record, commons_entry]
+        rules:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required: [rule_id, effect, condition]
+            properties:
+              rule_id:
+                type: string
+                pattern: ^[a-z0-9][a-z0-9_-]{1,63}$
+              effect:
+                type: string
+                enum: [allow, deny, require_approval]
+              condition:
+                $ref: "#/components/schemas/NonEmptyString"
+              min_approvals:
+                type: integer
+                minimum: 0
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+    ApprovalDecision:
+      type: object
+      additionalProperties: false
+      required: [actor, decision, decided_at]
+      properties:
+        actor:
+          $ref: "#/components/schemas/ActorRef"
+        decision:
+          type: string
+          enum: [approved, rejected]
+        comment:
+          type: string
+        decided_at:
+          $ref: "#/components/schemas/Timestamp"
+    ApprovalRequest:
+      type: object
+      additionalProperties: false
+      required: [schema_version, approval_id, taskpack_id, requested_by, reason, required_approvals, status, created_at]
+      properties:
+        schema_version:
+          type: string
+          const: v1alpha1
+        approval_id:
+          $ref: "#/components/schemas/UUID"
+        taskpack_id:
+          $ref: "#/components/schemas/UUID"
+        policy_id:
+          $ref: "#/components/schemas/UUID"
+        requested_by:
+          $ref: "#/components/schemas/ActorRef"
+        reason:
+          $ref: "#/components/schemas/NonEmptyString"
+        required_approvals:
+          type: integer
+          minimum: 1
+        approvals:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApprovalDecision"
+        status:
+          type: string
+          enum: [pending, approved, rejected, expired]
+        expires_at:
+          $ref: "#/components/schemas/Timestamp"
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+    PromotionGate:
+      type: object
+      additionalProperties: false
+      required: [schema_version, gate_id, institution_id, name, candidate_kinds, required_metrics, min_replay_runs, requires_approval, created_at]
+      properties:
+        schema_version:
+          type: string
+          const: v1alpha1
+        gate_id:
+          $ref: "#/components/schemas/UUID"
+        institution_id:
+          $ref: "#/components/schemas/UUID"
+        name:
+          $ref: "#/components/schemas/NonEmptyString"
+        candidate_kinds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [skill, rule, prompt_pattern, workflow_pattern, review_heuristic]
+        required_metrics:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required: [name, min_delta, direction]
+            properties:
+              name:
+                $ref: "#/components/schemas/NonEmptyString"
+              min_delta:
+                type: number
+                minimum: 0
+              direction:
+                type: string
+                enum: [higher_is_better, lower_is_better]
+        min_replay_runs:
+          type: integer
+          minimum: 1
+        requires_approval:
+          type: boolean
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+    CommonsEntry:
+      type: object
+      additionalProperties: false
+      required: [schema_version, commons_entry_id, institution_id, promotion_record_id, title, summary, artifact_ref, scope, status, created_at]
+      properties:
+        schema_version:
+          type: string
+          const: v1alpha1
+        commons_entry_id:
+          $ref: "#/components/schemas/UUID"
+        institution_id:
+          $ref: "#/components/schemas/UUID"
+        promotion_record_id:
+          $ref: "#/components/schemas/UUID"
+        title:
+          $ref: "#/components/schemas/NonEmptyString"
+        summary:
+          $ref: "#/components/schemas/NonEmptyString"
+        artifact_ref:
+          $ref: "#/components/schemas/ArtifactRef"
+        scope:
+          type: string
+          enum: [institution, team, project, role_specific]
+        status:
+          type: string
+          enum: [active, deprecated, superseded]
+        tags:
+          $ref: "#/components/schemas/Labels"
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+    TaskpackList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Taskpack"
+    DriBindingList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DriBinding"
+    ArtifactList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Artifact"
+    PromotionRecordList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PromotionRecord"
+    EvaluationJobList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/EvaluationJob"
+    GovernancePolicyList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/GovernancePolicy"
+    ApprovalRequestList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApprovalRequest"
+    PromotionGateList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PromotionGate"
+    CommonsEntryList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommonsEntry"

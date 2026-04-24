@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  specs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint:spec
+      - run: pnpm run lint:openapi
+      - run: pnpm run lint:docs
+      - run: pnpm run lint:fixtures
+      - run: pnpm run lint:adapter-profiles
+      - run: pnpm run check:typescript-spec
+      - run: pnpm --dir sdk/typescript run check
+      - run: make check-adapters
+      - run: pnpm --dir examples/typescript-adapter-core run check
+      - run: python -m compileall -q sdk/python/src
+      - run: PYTHONPATH=sdk/python/src python -m unittest discover -s sdk/python/tests
+
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.0"
+      - run: go test ./...
+      - run: go build ./server/cmd/guildd
+      - run: go build ./cli/cmd/guild
+      - run: go run ./cli/cmd/guild validate --kind taskpack --file spec/examples/taskpack.example.json
+      - run: go run ./cli/cmd/guild validate --kind dri-binding --file spec/examples/dri-binding.example.json
+      - run: go run ./cli/cmd/guild validate --kind artifact --file spec/examples/artifact.example.json
+      - run: go run ./cli/cmd/guild validate --kind promotion-record --file spec/examples/promotion-record.example.json
+      - run: go run ./cli/cmd/guild validate --kind replay-bundle --file spec/examples/replay-bundle.example.json
+      - run: go run ./cli/cmd/guild validate --kind governance-policy --file spec/examples/governance-policy.example.json
+      - run: go run ./cli/cmd/guild validate --kind approval-request --file spec/examples/approval-request.example.json
+      - run: go run ./cli/cmd/guild validate --kind promotion-gate --file spec/examples/promotion-gate.example.json
+      - run: go run ./cli/cmd/guild validate --kind commons-entry --file spec/examples/commons-entry.example.json
+      - run: ./scripts/smoke.sh
+      - run: ./scripts/e2e.sh
+      - run: ./scripts/simulation.sh
+
+  ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --dir ui run check
+      - run: pnpm --dir ui run build

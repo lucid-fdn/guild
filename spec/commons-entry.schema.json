@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guild.dev/spec/commons-entry.schema.json",
+  "title": "Commons Entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "commons_entry_id", "institution_id", "promotion_record_id", "title", "summary", "artifact_ref", "scope", "status", "created_at"],
+  "properties": {
+    "schema_version": { "const": "v1alpha1" },
+    "commons_entry_id": { "$ref": "common.schema.json#/$defs/uuid" },
+    "institution_id": { "$ref": "common.schema.json#/$defs/uuid" },
+    "promotion_record_id": { "$ref": "common.schema.json#/$defs/uuid" },
+    "title": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "summary": { "type": "string", "minLength": 1 },
+    "artifact_ref": { "$ref": "common.schema.json#/$defs/artifactRef" },
+    "scope": { "type": "string", "enum": ["institution", "team", "project", "role_specific"] },
+    "status": { "type": "string", "enum": ["active", "deprecated", "archived"] },
+    "created_at": { "$ref": "common.schema.json#/$defs/timestamp" }
+  }
+}

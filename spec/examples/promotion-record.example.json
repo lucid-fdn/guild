@@ -1,0 +1,50 @@
+{
+  "schema_version": "v1alpha1",
+  "promotion_record_id": "b2ddb0dd-b29c-4a28-b1ba-e9a2f8ff23fb",
+  "institution_id": "5d3dca03-89a0-4fb0-99ee-5f39ef5a6f0c",
+  "candidate_kind": "review_heuristic",
+  "candidate_ref": {
+    "artifact_id": "7757c515-c1d7-49f7-a360-2ce4ce993402",
+    "kind": "skill_candidate",
+    "uri": "s3://guild/commons/candidates/idempotency-checklist.json",
+    "version": 1
+  },
+  "source_run_ids": [
+    "9644f432-eeb5-443f-b7ea-f0aab64ad679",
+    "d8148799-c756-4274-aad6-4b0699f1a47b"
+  ],
+  "benchmark_suite": "payments-reliability-v1",
+  "metrics": [
+    {
+      "name": "regression_catch_rate",
+      "before": 0.67,
+      "after": 0.84,
+      "direction": "higher_is_better",
+      "unit": "ratio"
+    },
+    {
+      "name": "median_runtime_seconds",
+      "before": 42,
+      "after": 46,
+      "direction": "lower_is_better",
+      "unit": "seconds"
+    }
+  ],
+  "decision": "accepted",
+  "decision_reason": "Catch-rate improvement outweighed the small latency cost and no policy regressions were observed.",
+  "deciders": [
+    {
+      "actor_id": "52a203e8-0a20-4f0b-9b3d-78631e00d6ab",
+      "actor_type": "human",
+      "display_name": "Quentin"
+    },
+    {
+      "actor_id": "9a20e31d-eed8-4d32-a339-f6b5cf9f8bba",
+      "actor_type": "service",
+      "display_name": "guild-promoter"
+    }
+  ],
+  "accepted_scope": "institution",
+  "decided_at": "2026-04-24T11:00:00Z"
+}
+

@@ -1,0 +1,8 @@
+packages:
+  - "ui"
+  - "sdk/typescript"
+  - "adapters/typescript"
+  - "adapters/mcp"
+  - "adapters/a2a"
+  - "adapters/langgraph"
+  - "examples/typescript-adapter-core"

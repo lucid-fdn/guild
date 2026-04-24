@@ -1,0 +1,39 @@
+{
+  "schema_version": "v1alpha1",
+  "taskpack_id": "4e1fe00c-6303-453c-8cb6-2c34f84896e4",
+  "institution_id": "5d3dca03-89a0-4fb0-99ee-5f39ef5a6f0c",
+  "title": "Audit the payment webhook retry path",
+  "objective": "Find retry edge cases, propose fixes, and produce an implementation plan.",
+  "problem_statement": "Recent incidents suggest duplicate webhook handling still leaks side effects during timeout retries.",
+  "task_type": "analysis",
+  "priority": "high",
+  "requested_by": {
+    "actor_id": "52a203e8-0a20-4f0b-9b3d-78631e00d6ab",
+    "actor_type": "human",
+    "display_name": "Quentin"
+  },
+  "role_hint": "dri",
+  "context_budget": {
+    "max_input_tokens": 12000,
+    "max_output_tokens": 2500,
+    "context_strategy": "artifact_refs_first",
+    "max_artifacts_inline": 2
+  },
+  "permissions": {
+    "allow_network": false,
+    "allow_shell": false,
+    "allow_external_write": false,
+    "approval_mode": "ask",
+    "scopes": ["repo:read"]
+  },
+  "acceptance_criteria": [
+    {
+      "criterion_id": "root-cause",
+      "description": "Identify at least one likely duplicate side-effect path with file-level evidence.",
+      "required": true,
+      "verification_hint": "Code references and artifact links required."
+    }
+  ],
+  "created_at": "2026-04-24T10:00:00Z",
+  "trace_id": "a22fb6f0ff0bd4f8a6ef9173fbe80df4"
+}

@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guild.dev/spec/artifact.schema.json",
+  "title": "Artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_id",
+    "taskpack_id",
+    "kind",
+    "title",
+    "producer",
+    "storage",
+    "created_at",
+    "version"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "v1alpha1"
+    },
+    "artifact_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "taskpack_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "parent_artifact_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/uuid"
+      },
+      "default": []
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "report",
+        "code_patch",
+        "review",
+        "plan",
+        "dataset",
+        "decision_log",
+        "benchmark_result",
+        "skill_candidate",
+        "custom"
+      ]
+    },
+    "title": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "producer": {
+      "$ref": "common.schema.json#/$defs/actorRef"
+    },
+    "storage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uri",
+        "mime_type"
+      ],
+      "properties": {
+        "uri": {
+          "$ref": "common.schema.json#/$defs/uri"
+        },
+        "mime_type": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "trace_id": {
+          "type": "string"
+        },
+        "run_id": {
+          "$ref": "common.schema.json#/$defs/uuid"
+        },
+        "source_taskpack_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/uuid"
+          }
+        }
+      }
+    },
+    "evaluation_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "not_evaluated",
+            "pending",
+            "passed",
+            "failed"
+          ]
+        },
+        "score": {
+          "type": "number"
+        },
+        "benchmark_suite": {
+          "type": "string"
+        }
+      }
+    },
+    "labels": {
+      "$ref": "common.schema.json#/$defs/labels"
+    },
+    "security_classification": {
+      "type": "string",
+      "enum": [
+        "public",
+        "internal",
+        "restricted"
+      ],
+      "default": "internal"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    }
+  }
+}
+

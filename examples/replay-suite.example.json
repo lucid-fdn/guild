@@ -1,0 +1,11 @@
+{
+  "suite_id": "webhook-retry-audit",
+  "name": "Webhook retry institutional learning",
+  "taskpack_ids": [
+    "4e1fe00c-6303-453c-8cb6-2c34f84896e4"
+  ],
+  "metric_name": "duplicate_side_effect_catch_rate",
+  "before": 0.62,
+  "after": 0.81,
+  "direction": "higher_is_better"
+}

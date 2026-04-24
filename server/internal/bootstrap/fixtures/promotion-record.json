@@ -1,0 +1,15 @@
+{
+  "schema_version": "v1alpha1",
+  "promotion_record_id": "b2ddb0dd-b29c-4a28-b1ba-e9a2f8ff23fb",
+  "institution_id": "5d3dca03-89a0-4fb0-99ee-5f39ef5a6f0c",
+  "candidate_kind": "review_heuristic",
+  "candidate_ref": {
+    "artifact_id": "5d19ef0f-31b5-4709-a66b-da2d3bb4a731",
+    "kind": "review",
+    "uri": "s3://guild/artifacts/tasks/4e1fe00c-6303-453c-8cb6-2c34f84896e4/findings.md",
+    "version": 1
+  },
+  "decision": "accepted",
+  "decision_reason": "Catch-rate improvement outweighed the small latency cost and no policy regressions were observed.",
+  "decided_at": "2026-04-24T11:00:00Z"
+}

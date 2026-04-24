@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guild.dev/spec/promotion-gate.schema.json",
+  "title": "Promotion Gate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "gate_id", "institution_id", "name", "candidate_kinds", "required_metrics", "min_replay_runs", "requires_approval", "created_at"],
+  "properties": {
+    "schema_version": { "const": "v1alpha1" },
+    "gate_id": { "$ref": "common.schema.json#/$defs/uuid" },
+    "institution_id": { "$ref": "common.schema.json#/$defs/uuid" },
+    "name": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "candidate_kinds": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "enum": ["skill", "rule", "prompt_pattern", "workflow_pattern", "review_heuristic"] }
+    },
+    "required_metrics": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/metricDelta" }
+    },
+    "min_replay_runs": { "type": "integer", "minimum": 1 },
+    "requires_approval": { "type": "boolean" },
+    "created_at": { "$ref": "common.schema.json#/$defs/timestamp" }
+  }
+}

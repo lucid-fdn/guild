@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guild.dev/spec/dri-binding.schema.json",
+  "title": "DRI Binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "dri_binding_id",
+    "taskpack_id",
+    "owner",
+    "created_at",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "v1alpha1"
+    },
+    "dri_binding_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "taskpack_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "owner": {
+      "$ref": "common.schema.json#/$defs/actorRef"
+    },
+    "reviewers": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/actorRef"
+      },
+      "default": []
+    },
+    "specialists": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/actorRef"
+      },
+      "default": []
+    },
+    "approvers": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/actorRef"
+      },
+      "default": []
+    },
+    "escalation_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "time_based",
+            "policy_based"
+          ]
+        },
+        "escalate_after_seconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/actorRef"
+          }
+        }
+      }
+    },
+    "approval_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required_for": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "external_write",
+              "network",
+              "prod_access",
+              "cost_overrun",
+              "publication"
+            ]
+          }
+        },
+        "min_approvals": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "visibility_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "team",
+            "project",
+            "institution",
+            "restricted"
+          ]
+        },
+        "readers": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/actorRef"
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "assigned",
+        "accepted",
+        "in_progress",
+        "blocked",
+        "completed",
+        "canceled"
+      ]
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    }
+  }
+}
+
