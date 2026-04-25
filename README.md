@@ -36,7 +36,7 @@ GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proo
 
 ## Start Here
 
-- Install the alpha CLI with `go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3`.
+- Install the alpha CLI with `go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4`.
 - Run [AgentDesk](#agentdesk-local-agent-workflow) locally with no server.
 - Point agents at the executable [MCP server](adapters/mcp/README.md) with copy-paste [host setup](docs/MCP_SETUP.md).
 - Turn GitHub issues labeled `agent:ready` into mandates.
@@ -49,7 +49,7 @@ GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proo
 Alpha install path:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4
 guild agentdesk init
 guild mcp serve
 ```
@@ -59,17 +59,28 @@ Bootstrap GitHub issue intake and CI in an existing repo:
 ```bash
 GITHUB_TOKEN="$(gh auth token)" \
 guild agentdesk bootstrap github --repo lucid-fdn/your-repo
+
+GITHUB_TOKEN="$(gh auth token)" \
+guild agentdesk issue create "Fix docs typo" \
+  --repo lucid-fdn/your-repo \
+  --scope "docs/**" \
+  --acceptance "Docs are updated and proof is attached."
 ```
 
 Copy-paste external demo:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4
 
 GITHUB_TOKEN="$(gh auth token)" \
 guild agentdesk bootstrap github --repo lucid-fdn/your-repo
 
-# Create a GitHub issue labeled agent:ready, then:
+GITHUB_TOKEN="$(gh auth token)" \
+guild agentdesk issue create "Fix docs typo" \
+  --repo lucid-fdn/your-repo \
+  --scope "docs/**" \
+  --acceptance "Docs are updated and proof is attached."
+
 GITHUB_TOKEN="$(gh auth token)" \
 guild agentdesk next --source github --repo lucid-fdn/your-repo
 
@@ -86,7 +97,7 @@ guild agentdesk replay export --id <mandate-id>
 Single-binary MCP path:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4
 guild mcp serve
 ```
 
@@ -138,6 +149,7 @@ It wraps `agentdesk.yaml` and `.agentdesk/` so agents can self-serve from a repo
 ```bash
 go run ./cli/cmd/guild agentdesk init
 go run ./cli/cmd/guild agentdesk bootstrap github --repo lucid-fdn/app
+go run ./cli/cmd/guild agentdesk issue create "Fix failing auth tests" --repo lucid-fdn/app --scope "src/auth/**,tests/auth/**"
 go run ./cli/cmd/guild agentdesk mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
 go run ./cli/cmd/guild agentdesk next
 go run ./cli/cmd/guild agentdesk claim --id <mandate-id> --agent codex

@@ -15,7 +15,7 @@ Every agent run starts with a mandate and ends with proof.
 Public alpha install:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4
 guild agentdesk init
 guild agentdesk doctor
 ```
@@ -54,6 +54,12 @@ In an existing GitHub repo:
 ```bash
 GITHUB_TOKEN="$(gh auth token)" \
 guild agentdesk bootstrap github --repo lucid-fdn/your-repo
+
+GITHUB_TOKEN="$(gh auth token)" \
+guild agentdesk issue create "Fix docs typo" \
+  --repo lucid-fdn/your-repo \
+  --scope "docs/**" \
+  --acceptance "Docs are updated and proof is attached."
 ```
 
 This creates:
@@ -66,9 +72,15 @@ This creates:
 
 ## Copy-Paste Demo
 
-After bootstrap, create one GitHub issue labeled `agent:ready`, then run:
+After bootstrap, create one GitHub issue from the CLI, then run:
 
 ```bash
+GITHUB_TOKEN="$(gh auth token)" \
+guild agentdesk issue create "Fix docs typo" \
+  --repo lucid-fdn/your-repo \
+  --scope "docs/**" \
+  --acceptance "Docs are updated and proof is attached."
+
 GITHUB_TOKEN="$(gh auth token)" \
 guild agentdesk next --source github --repo lucid-fdn/your-repo
 

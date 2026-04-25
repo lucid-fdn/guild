@@ -657,7 +657,7 @@ func TestAgentDeskBootstrapGitHubCreatesPortableSetup(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(workflow), "go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3") {
+	if !strings.Contains(string(workflow), "go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4") {
 		t.Fatalf("expected portable go install workflow:\n%s", string(workflow))
 	}
 	if !strings.Contains(string(workflow), "cache: false") {
@@ -668,6 +668,56 @@ func TestAgentDeskBootstrapGitHubCreatesPortableSetup(t *testing.T) {
 	}
 	if _, err := os.Stat(".github/ISSUE_TEMPLATE/agent-ready.yml"); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestAgentDeskIssueCreateCreatesAgentReadyGitHubIssue(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost || r.URL.Path != "/repos/lucid-fdn/dogfood/issues" {
+			http.NotFound(w, r)
+			return
+		}
+		var payload githubIssueCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+			t.Fatal(err)
+		}
+		if payload.Title != "Fix docs typo" {
+			t.Fatalf("unexpected title: %s", payload.Title)
+		}
+		if !containsString(payload.Labels, "agent:ready") || !containsString(payload.Labels, "priority:p1") {
+			t.Fatalf("expected agent labels, got %#v", payload.Labels)
+		}
+		if !strings.Contains(payload.Body, "## Objective") || !strings.Contains(payload.Body, "docs/**") || !strings.Contains(payload.Body, "- Docs are updated.") {
+			t.Fatalf("unexpected body:\n%s", payload.Body)
+		}
+		w.WriteHeader(http.StatusCreated)
+		writeTestJSON(t, w, githubIssue{
+			Number:  7,
+			Title:   payload.Title,
+			HTMLURL: "https://github.com/lucid-fdn/dogfood/issues/7",
+			Labels:  []githubLabel{{Name: "agent:ready"}, {Name: "priority:p1"}},
+		})
+	}))
+	defer server.Close()
+	t.Setenv("GITHUB_API_URL", server.URL)
+	t.Setenv("GITHUB_TOKEN", "test-token")
+
+	var stdout bytes.Buffer
+	if err := run([]string{
+		"agentdesk", "issue", "create", "Fix docs typo",
+		"--repo", "lucid-fdn/dogfood",
+		"--scope", "docs/**",
+		"--acceptance", "Docs are updated.",
+		"--priority", "priority:p1",
+	}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("issue create failed: %v output=%s", err, stdout.String())
+	}
+	var report agentDeskIssueCreateReport
+	if err := json.Unmarshal(stdout.Bytes(), &report); err != nil {
+		t.Fatal(err)
+	}
+	if report.IssueNumber != 7 || report.URL != "https://github.com/lucid-fdn/dogfood/issues/7" {
+		t.Fatalf("unexpected report: %#v", report)
 	}
 }
 

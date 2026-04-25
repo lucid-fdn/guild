@@ -17,7 +17,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const defaultAgentDeskBootstrapVersion = "v0.1.0-alpha.3"
+const defaultAgentDeskBootstrapVersion = "v0.1.0-alpha.4"
 
 type agentDeskBootstrapReport struct {
 	SchemaVersion string                         `json:"schema_version"`

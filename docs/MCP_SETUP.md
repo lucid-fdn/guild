@@ -8,7 +8,7 @@ Use it when you want Codex, Claude, OpenClaw, OpenFang, or another MCP-capable a
 ## 90-Second Agent Quickstart
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4
 guild agentdesk init
 guild agentdesk mandate create "Update MCP docs" --writable "docs/**,adapters/mcp/**"
 guild agentdesk doctor

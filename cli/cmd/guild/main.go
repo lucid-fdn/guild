@@ -29,6 +29,7 @@ Usage:
   guild mcp serve
   guild agentdesk init
   guild agentdesk bootstrap github --repo owner/repo
+  guild agentdesk issue create "Fix docs typo" --repo owner/repo --scope "docs/**"
   guild agentdesk mandate create "Fix failing auth tests"
   guild agentdesk next
   guild agentdesk preflight --id <uuid> --action write --path src/auth/login.ts

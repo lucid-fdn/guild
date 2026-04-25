@@ -26,6 +26,7 @@ Usage:
   guild agentdesk init
   guild agentdesk bootstrap github --repo owner/repo
   guild agentdesk doctor [--id <uuid>] [--repo owner/repo]
+  guild agentdesk issue create "Fix docs typo" --repo owner/repo --scope "docs/**"
   guild agentdesk mandate create "Fix failing auth tests"
   guild agentdesk mandate show --id <uuid>
   guild agentdesk next [--source local|github] [--repo owner/repo] [--include-claimed]
@@ -53,6 +54,8 @@ func runAgentDesk(args []string, stdout, stderr io.Writer) error {
 		return runAgentDeskBootstrap(args[1:], stdout, stderr)
 	case "doctor":
 		return runAgentDeskDoctor(args[1:], stdout)
+	case "issue":
+		return runAgentDeskIssue(args[1:], stdout, stderr)
 	case "mandate":
 		return runAgentDeskMandate(args[1:], stdout, stderr)
 	case "next":
