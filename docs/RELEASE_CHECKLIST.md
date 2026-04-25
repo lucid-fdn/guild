@@ -6,6 +6,7 @@ Use this before tagging a public release or making launch noise.
 
 - `make release-check` passes.
 - `make verify` passes from a clean checkout.
+- `make agentdesk-ts` passes and exercises the TypeScript-first CLI/MCP path.
 - `make e2e` passes against a fresh local server.
 - README quickstart works on macOS and Linux.
 - `docs/quickstart.md` matches the current commands and endpoints.

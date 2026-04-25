@@ -61,4 +61,7 @@ GUILD_BASE_URL="${BASE_URL}" corepack pnpm --dir examples/typescript-adapter-cor
 go run ./cli/cmd/guild validate --kind replay-bundle --file "${DATA_DIR}/adapter-replay.json" >/dev/null
 grep -q '"taskpack_id": "d013e9c3-3fdc-4f72-a79f-3ca30d0fe111"' "${DATA_DIR}/adapter-replay.json"
 
+GITHUB_STEP_SUMMARY="${DATA_DIR}/github-step-summary.md" GUILD_AGENTDESK_TS_SKIP_BUILD=1 "${ROOT}/scripts/agentdesk-ts.sh" >/dev/null
+grep -q "Agent Work Contract: passed" "${DATA_DIR}/github-step-summary.md"
+
 echo "e2e-ok ${BASE_URL}"

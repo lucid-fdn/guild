@@ -23,6 +23,8 @@ jobs:
       - run: pnpm run lint:fixtures
       - run: pnpm run lint:adapter-profiles
       - run: pnpm run check:typescript-spec
+      - run: pnpm run check:agentdesk-ts
+      - run: ./scripts/agentdesk-ts.sh
       - run: pnpm --dir sdk/typescript run check
       - run: make check-adapters
       - run: pnpm --dir examples/typescript-adapter-core run check

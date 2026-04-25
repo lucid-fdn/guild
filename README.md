@@ -491,6 +491,12 @@ Run the full pre-release gate:
 make release-check
 ```
 
+Run the TypeScript-first AgentDesk simulation directly:
+
+```bash
+make agentdesk-ts
+```
+
 Validate the HTTP API contract:
 
 ```bash

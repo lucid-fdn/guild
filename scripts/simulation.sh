@@ -73,4 +73,7 @@ for path in [
         assert payload["items"], f"expected items for {path}"
 PY
 
+GITHUB_STEP_SUMMARY="${DATA_DIR}/github-step-summary.md" GUILD_AGENTDESK_TS_SKIP_BUILD=1 "${ROOT}/scripts/agentdesk-ts.sh" >/dev/null
+grep -q "Agent Work Contract: passed" "${DATA_DIR}/github-step-summary.md"
+
 echo "simulation-ok ${BASE_URL}"

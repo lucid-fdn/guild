@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 PNPM := corepack pnpm
 
-.PHONY: help install lint-spec lint-openapi lint-docs lint-fixtures lint-adapter-profiles generate-typescript-spec check-typescript-spec check-agentdesk-ts build-agentdesk-ts validate-examples test-go build-go build-cli check-typescript-sdk check-python-sdk check-sdk check-adapters check-examples check-ui build-ui smoke e2e simulation verify release-check dev-up dev-down run-server run-ui
+.PHONY: help install lint-spec lint-openapi lint-docs lint-fixtures lint-adapter-profiles generate-typescript-spec check-typescript-spec check-agentdesk-ts build-agentdesk-ts agentdesk-ts validate-examples test-go build-go build-cli check-typescript-sdk check-python-sdk check-sdk check-adapters check-examples check-ui build-ui smoke e2e simulation verify release-check dev-up dev-down run-server run-ui
 
 help:
 	@echo "Available targets:"
@@ -14,6 +14,7 @@ help:
 	@echo "  make generate-typescript-spec - Regenerate TypeScript SDK spec types"
 	@echo "  make check-typescript-spec - Check generated TypeScript spec types are current"
 	@echo "  make check-agentdesk-ts - Build and test the TypeScript-first AgentDesk packages"
+	@echo "  make agentdesk-ts - Run the TypeScript-first local AgentDesk simulation"
 	@echo "  make validate-examples - Validate public examples through the Guild CLI"
 	@echo "  make smoke      - Run the local API smoke test"
 	@echo "  make e2e        - Run CLI, SDK, adapter, and replay e2e"
@@ -53,6 +54,9 @@ build-agentdesk-ts:
 
 check-agentdesk-ts:
 	$(PNPM) run check:agentdesk-ts
+
+agentdesk-ts:
+	./scripts/agentdesk-ts.sh
 
 validate-examples:
 	go run ./cli/cmd/guild validate --kind taskpack --file spec/examples/taskpack.example.json
@@ -115,7 +119,7 @@ simulation:
 release-check:
 	./scripts/release-check.sh
 
-verify: install lint-spec lint-openapi lint-docs lint-fixtures lint-adapter-profiles check-typescript-spec check-agentdesk-ts validate-examples test-go build-go build-cli check-sdk check-adapters check-examples check-ui build-ui smoke
+verify: install lint-spec lint-openapi lint-docs lint-fixtures lint-adapter-profiles check-typescript-spec check-agentdesk-ts agentdesk-ts validate-examples test-go build-go build-cli check-sdk check-adapters check-examples check-ui build-ui smoke
 
 dev-up:
 	docker compose -f deploy/docker-compose.local.yml up -d

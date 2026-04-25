@@ -17,6 +17,7 @@ required_not_ignored=(
   "scripts/smoke.sh"
   "scripts/e2e.sh"
   "scripts/simulation.sh"
+  "scripts/agentdesk-ts.sh"
   "examples/one-task-one-dri-commons/run.sh"
   "scripts/lib/server.sh"
   "spec/taskpack.schema.json"
@@ -27,6 +28,7 @@ required_executable=(
   "scripts/smoke.sh"
   "scripts/e2e.sh"
   "scripts/simulation.sh"
+  "scripts/agentdesk-ts.sh"
   "scripts/lib/server.sh"
   "adapters/mcp/bin/guild-agentdesk-mcp"
 )
