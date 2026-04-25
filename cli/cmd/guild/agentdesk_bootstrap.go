@@ -17,7 +17,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const defaultAgentDeskBootstrapVersion = "v0.1.0-alpha.2"
+const defaultAgentDeskBootstrapVersion = "v0.1.0-alpha.3"
 
 type agentDeskBootstrapReport struct {
 	SchemaVersion string                         `json:"schema_version"`
@@ -315,6 +315,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "1.23.0"
+          cache: false
       - name: Install Guild
         run: go install github.com/lucid-fdn/guild/cli/cmd/guild@%s
       - name: Resolve mandate
@@ -380,6 +381,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "1.23.0"
+          cache: false
       - name: Install Guild
         run: go install github.com/lucid-fdn/guild/cli/cmd/guild@%s
       - name: Run AgentDesk doctor

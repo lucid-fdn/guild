@@ -15,7 +15,7 @@ Every agent run starts with a mandate and ends with proof.
 Public alpha install:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3
 guild agentdesk init
 guild agentdesk doctor
 ```
@@ -63,6 +63,26 @@ This creates:
 - an `agent:ready` issue template
 - portable GitHub Actions workflows that install the pinned Guild CLI
 - `agent:ready` and priority labels when `GITHUB_TOKEN` is set
+
+## Copy-Paste Demo
+
+After bootstrap, create one GitHub issue labeled `agent:ready`, then run:
+
+```bash
+GITHUB_TOKEN="$(gh auth token)" \
+guild agentdesk next --source github --repo lucid-fdn/your-repo
+
+guild agentdesk claim --id <mandate-id> --agent codex
+guild agentdesk context compile --id <mandate-id> --role coder
+guild agentdesk preflight --id <mandate-id> --action write --path docs/example.md
+guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
+guild agentdesk proof add --id <mandate-id> --kind changed_files --path changed-files.json
+guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+guild agentdesk verify --id <mandate-id>
+guild agentdesk replay export --id <mandate-id>
+```
+
+Open a PR with `.agentdesk/**` committed and the generated Agent Work Contract workflow will post the verification report.
 
 ## Connect An MCP Host
 

@@ -657,8 +657,11 @@ func TestAgentDeskBootstrapGitHubCreatesPortableSetup(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(workflow), "go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2") {
+	if !strings.Contains(string(workflow), "go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3") {
 		t.Fatalf("expected portable go install workflow:\n%s", string(workflow))
+	}
+	if !strings.Contains(string(workflow), "cache: false") {
+		t.Fatalf("expected setup-go cache to be disabled for non-Go repos:\n%s", string(workflow))
 	}
 	if !strings.Contains(string(workflow), "guild agentdesk verify") {
 		t.Fatalf("expected workflow to verify AgentDesk contract:\n%s", string(workflow))

@@ -36,7 +36,7 @@ GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proo
 
 ## Start Here
 
-- Install the alpha CLI with `go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2`.
+- Install the alpha CLI with `go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3`.
 - Run [AgentDesk](#agentdesk-local-agent-workflow) locally with no server.
 - Point agents at the executable [MCP server](adapters/mcp/README.md) with copy-paste [host setup](docs/MCP_SETUP.md).
 - Turn GitHub issues labeled `agent:ready` into mandates.
@@ -49,7 +49,7 @@ GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proo
 Alpha install path:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3
 guild agentdesk init
 guild mcp serve
 ```
@@ -61,10 +61,32 @@ GITHUB_TOKEN="$(gh auth token)" \
 guild agentdesk bootstrap github --repo lucid-fdn/your-repo
 ```
 
+Copy-paste external demo:
+
+```bash
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3
+
+GITHUB_TOKEN="$(gh auth token)" \
+guild agentdesk bootstrap github --repo lucid-fdn/your-repo
+
+# Create a GitHub issue labeled agent:ready, then:
+GITHUB_TOKEN="$(gh auth token)" \
+guild agentdesk next --source github --repo lucid-fdn/your-repo
+
+guild agentdesk claim --id <mandate-id> --agent codex
+guild agentdesk context compile --id <mandate-id> --role coder
+guild agentdesk preflight --id <mandate-id> --action write --path docs/example.md
+guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
+guild agentdesk proof add --id <mandate-id> --kind changed_files --path changed-files.json
+guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+guild agentdesk verify --id <mandate-id>
+guild agentdesk replay export --id <mandate-id>
+```
+
 Single-binary MCP path:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.3
 guild mcp serve
 ```
 
