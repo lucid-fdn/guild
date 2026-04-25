@@ -28,6 +28,7 @@ Usage:
   guild eval-submit --base-url http://localhost:8080 --suite examples/replay-suite.example.json [--wait]
   guild mcp serve
   guild agentdesk init
+  guild agentdesk bootstrap github --repo owner/repo
   guild agentdesk mandate create "Fix failing auth tests"
   guild agentdesk next
   guild agentdesk preflight --id <uuid> --action write --path src/auth/login.ts
