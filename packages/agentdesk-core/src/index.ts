@@ -158,7 +158,7 @@ export class AgentDesk {
   }
 
   loadConfig(): WorkspaceConstitution {
-    const config = parse(readFileSync(join(this.root, "agentdesk.yaml"), "utf8")) as WorkspaceConstitution;
+    const config = normalizeWorkspaceConfig(parse(readFileSync(join(this.root, "agentdesk.yaml"), "utf8")) as WorkspaceConstitution & { version?: string });
     assertWorkspaceConfig(config);
     return config;
   }
@@ -639,6 +639,13 @@ function assertWorkspaceConfig(config: WorkspaceConstitution): void {
   if (config.schema_version !== "v1alpha1" || !config.workspace || !config.defaults || !config.scope) {
     throw new Error("agentdesk.yaml is not a valid v1alpha1 workspace constitution");
   }
+}
+
+function normalizeWorkspaceConfig(config: WorkspaceConstitution & { version?: string }): WorkspaceConstitution {
+  if (!config.schema_version && config.version) {
+    config.schema_version = config.version as WorkspaceConstitution["schema_version"];
+  }
+  return config;
 }
 
 function assertTaskpack(taskpack: Taskpack): void {

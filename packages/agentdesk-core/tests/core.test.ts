@@ -28,3 +28,31 @@ test("local AgentDesk loop creates, claims, verifies, and exports replay", () =>
   assert.equal(report.ready, true);
   assert.equal(desk.exportReplay(mandate.taskpack_id).artifacts.length, 3);
 });
+
+test("loads existing Go-bootstrap workspace config with version key", () => {
+  const root = mkdtempSync(join(tmpdir(), "agentdesk-core-legacy-"));
+  writeFileSync(
+    join(root, "agentdesk.yaml"),
+    `version: v1alpha1
+workspace: legacy
+mission: Existing Go bootstrap config.
+defaults:
+  max_runtime_minutes: 45
+  max_cost_usd: 5
+  context_budget_tokens: 12000
+task_sources:
+  - type: local
+    path: .agentdesk/mandates
+scope:
+  writable:
+    - docs/**
+  forbidden:
+    - .env
+success_criteria:
+  - A proof artifact is attached.
+`
+  );
+  const config = new AgentDesk(root).loadConfig();
+  assert.equal(config.schema_version, "v1alpha1");
+  assert.equal(config.workspace, "legacy");
+});
