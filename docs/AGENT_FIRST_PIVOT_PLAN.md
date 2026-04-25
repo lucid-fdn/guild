@@ -300,7 +300,7 @@ V1 sources:
 Implemented GitHub ingestion command:
 
 ```bash
-guild agentdesk next --source github --repo lucid-fdn/app --query "label:agent:ready state:open"
+guild-agentdesk next --source github --repo lucid-fdn/app --query "label:agent:ready state:open"
 ```
 
 The adapter maps GitHub Issues into local mandates with deterministic IDs, source references, sanitized labels, priority labels, role labels, and scope labels.
@@ -667,7 +667,7 @@ Replay: attached
 Implemented CI reporting command:
 
 ```bash
-guild agentdesk verify --id <mandate-id> --github-report --replay-file .agentdesk/replay/replay.json
+guild-agentdesk verify --id <mandate-id> --github-report --replay-file .agentdesk/replay/replay.json
 ```
 
 When running in GitHub Actions, the command writes to `GITHUB_STEP_SUMMARY` and posts a PR comment when `GITHUB_TOKEN`, `GITHUB_REPOSITORY`, and PR metadata are available.

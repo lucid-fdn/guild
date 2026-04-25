@@ -1,0 +1,34 @@
+{
+  "name": "guild-agentdesk",
+  "version": "0.1.0-alpha.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "guild-agentdesk": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc --noEmit && tsx --test tests/*.test.ts",
+    "cli": "node dist/index.js",
+    "prepack": "npm run build",
+    "test": "tsx --test tests/*.test.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@lucid-fdn/agentdesk-core": "workspace:*",
+    "@lucid-fdn/agentdesk-github": "workspace:*",
+    "@lucid-fdn/agentdesk-mcp": "workspace:*"
+  },
+  "devDependencies": {
+    "@guild/client": "workspace:*",
+    "@types/node": "^22.15.3",
+    "tsx": "^4.20.6",
+    "typescript": "^5.8.3"
+  }
+}

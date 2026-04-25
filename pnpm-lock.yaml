@@ -104,6 +104,88 @@ importers:
         specifier: ^5.8.3
         version: 5.9.3
 
+  packages/agentdesk-cli:
+    dependencies:
+      '@lucid-fdn/agentdesk-core':
+        specifier: workspace:*
+        version: link:../agentdesk-core
+      '@lucid-fdn/agentdesk-github':
+        specifier: workspace:*
+        version: link:../agentdesk-github
+      '@lucid-fdn/agentdesk-mcp':
+        specifier: workspace:*
+        version: link:../agentdesk-mcp
+    devDependencies:
+      '@guild/client':
+        specifier: workspace:*
+        version: link:../../sdk/typescript
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.19.17
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  packages/agentdesk-core:
+    dependencies:
+      yaml:
+        specifier: ^2.6.1
+        version: 2.8.3
+    devDependencies:
+      '@guild/client':
+        specifier: workspace:*
+        version: link:../../sdk/typescript
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.19.17
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  packages/agentdesk-github:
+    dependencies:
+      '@lucid-fdn/agentdesk-core':
+        specifier: workspace:*
+        version: link:../agentdesk-core
+    devDependencies:
+      '@guild/client':
+        specifier: workspace:*
+        version: link:../../sdk/typescript
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.19.17
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  packages/agentdesk-mcp:
+    dependencies:
+      '@lucid-fdn/agentdesk-core':
+        specifier: workspace:*
+        version: link:../agentdesk-core
+      '@lucid-fdn/agentdesk-github':
+        specifier: workspace:*
+        version: link:../agentdesk-github
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.19.17
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
   sdk/typescript:
     devDependencies:
       tsx:
@@ -1540,6 +1622,11 @@ packages:
     resolution: {integrity: sha512-vIYeF1u3CjlhAFekPPAk2h/Kv4T3mAkMox5OymRiJQB0spDP10LHvt+K7G9Ny6NuuMAb25/6n1qyUjAcGNf/AA==}
     engines: {node: '>= 6'}
 
+  yaml@2.8.3:
+    resolution: {integrity: sha512-AvbaCLOO2Otw/lW5bmh9d/WEdcDFdQp2Z2ZUH3pX9U2ihyUY0nvLv7J6TrWowklRGPYbB/IuIMfYgxaCPg5Bpg==}
+    engines: {node: '>= 14.6'}
+    hasBin: true
+
   yargs-parser@20.2.9:
     resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
     engines: {node: '>=10'}
@@ -2858,6 +2945,8 @@ snapshots:
   yaml-ast-parser@0.0.43: {}
 
   yaml@1.10.3: {}
+
+  yaml@2.8.3: {}
 
   yargs-parser@20.2.9: {}
 

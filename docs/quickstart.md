@@ -6,26 +6,28 @@ Every agent run starts with a mandate and ends with proof.
 
 ## Prerequisites
 
-- Go 1.23+
 - Node.js 22+
 - Corepack-enabled pnpm
 
 ## Install
 
-Public alpha install:
-
-```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4
-guild agentdesk init
-guild agentdesk doctor
-```
-
-Repo development install:
+TypeScript-first repo alpha:
 
 ```bash
 corepack enable
-make install
+corepack pnpm install
+corepack pnpm run build:agentdesk-ts
+node packages/agentdesk-cli/dist/index.js init
+node packages/agentdesk-cli/dist/index.js doctor
 ```
+
+The public npm target is:
+
+```bash
+npx guild-agentdesk init
+```
+
+The legacy Go CLI remains available as a native fallback, not the primary agent-facing surface.
 
 ## Run AgentDesk Locally
 
@@ -33,18 +35,18 @@ AgentDesk is the fastest path because it does not require a server.
 It stores the work contract in `agentdesk.yaml` and `.agentdesk/`.
 
 ```bash
-go run ./cli/cmd/guild agentdesk init
-go run ./cli/cmd/guild agentdesk mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
-go run ./cli/cmd/guild agentdesk next
-go run ./cli/cmd/guild agentdesk claim --id <mandate-id> --agent codex
-go run ./cli/cmd/guild agentdesk context compile --id <mandate-id> --role coder
-go run ./cli/cmd/guild agentdesk preflight --id <mandate-id> --action write --path src/auth/login.ts
-go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
-go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind changed_files --path changed-files.json
-go run ./cli/cmd/guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
-go run ./cli/cmd/guild agentdesk doctor --id <mandate-id>
-go run ./cli/cmd/guild agentdesk verify --id <mandate-id>
-go run ./cli/cmd/guild agentdesk replay export --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js init
+node packages/agentdesk-cli/dist/index.js mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
+node packages/agentdesk-cli/dist/index.js next
+node packages/agentdesk-cli/dist/index.js claim --id <mandate-id> --agent codex
+node packages/agentdesk-cli/dist/index.js context compile --id <mandate-id> --role coder
+node packages/agentdesk-cli/dist/index.js preflight --id <mandate-id> --action write --path src/auth/login.ts
+node packages/agentdesk-cli/dist/index.js proof add --id <mandate-id> --kind test_report --path test-results.xml
+node packages/agentdesk-cli/dist/index.js proof add --id <mandate-id> --kind changed_files --path changed-files.json
+node packages/agentdesk-cli/dist/index.js handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+node packages/agentdesk-cli/dist/index.js doctor --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js verify --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js replay export --id <mandate-id>
 ```
 
 ## Bootstrap GitHub Intake
@@ -53,10 +55,10 @@ In an existing GitHub repo:
 
 ```bash
 GITHUB_TOKEN="$(gh auth token)" \
-guild agentdesk bootstrap github --repo lucid-fdn/your-repo
+node packages/agentdesk-cli/dist/index.js bootstrap github --repo lucid-fdn/your-repo
 
 GITHUB_TOKEN="$(gh auth token)" \
-guild agentdesk issue create "Fix docs typo" \
+node packages/agentdesk-cli/dist/index.js issue create "Fix docs typo" \
   --repo lucid-fdn/your-repo \
   --scope "docs/**" \
   --acceptance "Docs are updated and proof is attached."
@@ -76,22 +78,22 @@ After bootstrap, create one GitHub issue from the CLI, then run:
 
 ```bash
 GITHUB_TOKEN="$(gh auth token)" \
-guild agentdesk issue create "Fix docs typo" \
+node packages/agentdesk-cli/dist/index.js issue create "Fix docs typo" \
   --repo lucid-fdn/your-repo \
   --scope "docs/**" \
   --acceptance "Docs are updated and proof is attached."
 
 GITHUB_TOKEN="$(gh auth token)" \
-guild agentdesk next --source github --repo lucid-fdn/your-repo
+node packages/agentdesk-cli/dist/index.js next --source github --repo lucid-fdn/your-repo
 
-guild agentdesk claim --id <mandate-id> --agent codex
-guild agentdesk context compile --id <mandate-id> --role coder
-guild agentdesk preflight --id <mandate-id> --action write --path docs/example.md
-guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
-guild agentdesk proof add --id <mandate-id> --kind changed_files --path changed-files.json
-guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
-guild agentdesk verify --id <mandate-id>
-guild agentdesk replay export --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js claim --id <mandate-id> --agent codex
+node packages/agentdesk-cli/dist/index.js context compile --id <mandate-id> --role coder
+node packages/agentdesk-cli/dist/index.js preflight --id <mandate-id> --action write --path docs/example.md
+node packages/agentdesk-cli/dist/index.js proof add --id <mandate-id> --kind test_report --path test-results.xml
+node packages/agentdesk-cli/dist/index.js proof add --id <mandate-id> --kind changed_files --path changed-files.json
+node packages/agentdesk-cli/dist/index.js handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+node packages/agentdesk-cli/dist/index.js verify --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js replay export --id <mandate-id>
 ```
 
 Open a PR with `.agentdesk/**` committed and the generated Agent Work Contract workflow will post the verification report.
@@ -101,7 +103,7 @@ Open a PR with `.agentdesk/**` committed and the generated Agent Work Contract w
 Use the single binary from any initialized workspace:
 
 ```bash
-guild mcp serve
+node packages/agentdesk-cli/dist/index.js mcp serve
 ```
 
 Claude Desktop, Codex, OpenFang, OpenClaw, and generic MCP host examples are in [MCP Setup](MCP_SETUP.md).

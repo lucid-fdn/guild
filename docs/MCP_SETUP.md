@@ -1,21 +1,23 @@
 # MCP Setup
 
-Guild ships a single-binary MCP stdio server.
-After `go install`, agent hosts can connect directly to `guild mcp serve`.
+Guild now exposes a TypeScript-first MCP stdio server through `guild-agentdesk mcp serve`.
+The old Go binary MCP server remains available as a native fallback.
 
 Use it when you want Codex, Claude, OpenClaw, OpenFang, or another MCP-capable agent host to fetch mandates, claim work, compile context, run preflight checks, request approvals, publish proof, verify completion, and export replay without a hosted service.
 
 ## 90-Second Agent Quickstart
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4
-guild agentdesk init
-guild agentdesk mandate create "Update MCP docs" --writable "docs/**,adapters/mcp/**"
-guild agentdesk doctor
-guild mcp serve
+corepack enable
+corepack pnpm install
+corepack pnpm run build:agentdesk-ts
+node packages/agentdesk-cli/dist/index.js init
+node packages/agentdesk-cli/dist/index.js mandate create "Update MCP docs" --writable "docs/**,packages/agentdesk-mcp/**"
+node packages/agentdesk-cli/dist/index.js doctor
+node packages/agentdesk-cli/dist/index.js mcp serve
 ```
 
-The MCP host connects to `guild mcp serve` over stdio.
+The MCP host connects to `guild-agentdesk mcp serve` over stdio.
 
 After connection, the agent flow is:
 
@@ -36,8 +38,8 @@ guild_export_replay_bundle
 {
   "mcpServers": {
     "guild-agentdesk": {
-      "command": "guild",
-      "args": ["mcp", "serve"],
+      "command": "node",
+      "args": ["/absolute/path/to/guild/packages/agentdesk-cli/dist/index.js", "mcp", "serve"],
       "env": {
         "GITHUB_REPOSITORY": "lucid-fdn/guild"
       }
@@ -52,8 +54,8 @@ If the agent should pull GitHub Issues labeled `agent:ready`, add a token:
 {
   "mcpServers": {
     "guild-agentdesk": {
-      "command": "guild",
-      "args": ["mcp", "serve"],
+      "command": "node",
+      "args": ["/absolute/path/to/guild/packages/agentdesk-cli/dist/index.js", "mcp", "serve"],
       "env": {
         "GUILD_AGENTDESK_SOURCE": "github",
         "GITHUB_REPOSITORY": "lucid-fdn/guild",
@@ -70,8 +72,8 @@ For Codex-style MCP configuration, use a stdio server entry:
 
 ```toml
 [mcp_servers.guild-agentdesk]
-command = "guild"
-args = ["mcp", "serve"]
+command = "node"
+args = ["/absolute/path/to/guild/packages/agentdesk-cli/dist/index.js", "mcp", "serve"]
 
 [mcp_servers.guild-agentdesk.env]
 GUILD_AGENTDESK_SOURCE = "github"
@@ -87,8 +89,8 @@ Any host that accepts MCP stdio server definitions can use the same command shap
 {
   "name": "guild-agentdesk",
   "transport": "stdio",
-  "command": "guild",
-  "args": ["mcp", "serve"],
+  "command": "node",
+      "args": ["/absolute/path/to/guild/packages/agentdesk-cli/dist/index.js", "mcp", "serve"],
   "env": {
     "GUILD_AGENTDESK_SOURCE": "github",
     "GITHUB_REPOSITORY": "lucid-fdn/guild",
@@ -107,13 +109,12 @@ The TypeScript MCP package remains useful for adapter development:
 git clone https://github.com/lucid-fdn/guild.git
 cd guild
 corepack enable
-corepack pnpm install --frozen-lockfile
-go build -o bin/guild ./cli/cmd/guild
-GUILD_CLI="$(pwd)/bin/guild" corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+corepack pnpm install
+corepack pnpm run build:agentdesk-ts
+node packages/agentdesk-cli/dist/index.js mcp serve
 ```
 
-The public alpha install path is the Go binary plus `guild mcp serve`.
-Do not rely on an npm package until the final package scope is stable.
+The public install target is `npx guild-agentdesk mcp serve` once the npm package is published.
 
 ## Tool Contract
 
@@ -136,12 +137,12 @@ Create issues with the `agent:ready` label, then run:
 
 ```bash
 GITHUB_TOKEN="$(gh auth token)" \
-guild agentdesk bootstrap github --repo lucid-fdn/guild
+node packages/agentdesk-cli/dist/index.js bootstrap github --repo lucid-fdn/guild
 
 GITHUB_TOKEN="$(gh auth token)" \
 GITHUB_REPOSITORY="lucid-fdn/guild" \
 GUILD_AGENTDESK_SOURCE="github" \
-guild mcp serve
+node packages/agentdesk-cli/dist/index.js mcp serve
 ```
 
 The agent can then call `guild_get_next_mandate` and `guild_claim_mandate`.

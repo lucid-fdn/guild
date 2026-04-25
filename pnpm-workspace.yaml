@@ -1,4 +1,8 @@
 packages:
+  - "packages/agentdesk-core"
+  - "packages/agentdesk-cli"
+  - "packages/agentdesk-github"
+  - "packages/agentdesk-mcp"
   - "ui"
   - "sdk/typescript"
   - "adapters/typescript"

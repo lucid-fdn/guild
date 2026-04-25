@@ -83,11 +83,11 @@ Must communicate:
 Show:
 
 - a GitHub issue labeled `agent:ready`
-- `guild agentdesk next --source github`
-- `guild agentdesk claim --id ...`
+- `guild-agentdesk next --source github`
+- `guild-agentdesk claim --id ...`
 - context compilation and preflight
 - proof artifacts added by the agent
-- `guild agentdesk verify --github-report`
+- `guild-agentdesk verify --github-report`
 - replay export
 
 ### Architecture Post

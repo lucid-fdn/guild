@@ -149,8 +149,8 @@ Humans already create tasks in GitHub.
 Guild lets agents consume them directly.
 
 ```bash
-GITHUB_TOKEN=... guild agentdesk next --source github --repo lucid-fdn/app --query "label:agent:ready state:open"
-guild agentdesk claim --id <mandate-id> --agent codex
+GITHUB_TOKEN=... guild-agentdesk next --source github --repo lucid-fdn/app --query "label:agent:ready state:open"
+guild-agentdesk claim --id <mandate-id> --agent codex
 ```
 
 No new kanban ritual required.
@@ -163,10 +163,10 @@ An MCP server agents can plug into.
 
 Body:
 
-Run `guild mcp serve` in any initialized workspace and MCP hosts can fetch mandates, claim work, compile context, check preflight, request approvals, publish proof, verify completion, and export replay.
+Run `guild-agentdesk mcp serve` in any initialized workspace and MCP hosts can fetch mandates, claim work, compile context, check preflight, request approvals, publish proof, verify completion, and export replay.
 
 ```bash
-guild mcp serve
+guild-agentdesk mcp serve
 ```
 
 ## Section 6
@@ -177,7 +177,7 @@ CI can enforce the contract.
 
 Body:
 
-Use `guild agentdesk verify --github-report` as a GitHub Actions check.
+Use `guild-agentdesk verify --github-report` as a GitHub Actions check.
 
 The PR report says:
 

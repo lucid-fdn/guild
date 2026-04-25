@@ -5,6 +5,8 @@
   "description": "Agent-first work contracts: mandates, claims, proof, and replay.",
   "packageManager": "pnpm@10.8.0",
   "scripts": {
+    "check:agentdesk-ts": "corepack pnpm run build:agentdesk-ts && corepack pnpm --dir packages/agentdesk-core run test && corepack pnpm --dir packages/agentdesk-github run test && corepack pnpm --dir packages/agentdesk-mcp run test && corepack pnpm --dir packages/agentdesk-cli run test",
+    "build:agentdesk-ts": "corepack pnpm --dir packages/agentdesk-core run build && corepack pnpm --dir packages/agentdesk-github run build && corepack pnpm --dir packages/agentdesk-mcp run build && corepack pnpm --dir packages/agentdesk-cli run build",
     "check:typescript-spec": "node scripts/generate-typescript-spec.mjs --check",
     "lint:docs": "node scripts/check-doc-links.mjs",
     "lint:adapter-profiles": "node scripts/validate-adapter-profiles.mjs",

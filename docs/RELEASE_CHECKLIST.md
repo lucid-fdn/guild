@@ -27,8 +27,8 @@ Use this before tagging a public release or making launch noise.
 - README clearly says Guild is not an orchestrator.
 - README clearly says every agent run starts with a mandate and ends with proof.
 - AgentDesk local workflow includes `next`, `claim`, `context`, `preflight`, `proof`, `verify`, and `replay`.
-- MCP docs show the single-binary `guild mcp serve` server path.
-- `guild agentdesk doctor` passes in an initialized workspace.
+- MCP docs show the TypeScript-first `guild-agentdesk mcp serve` server path.
+- `guild-agentdesk doctor` passes in an initialized workspace.
 - README clearly says what is implemented now versus planned.
 - Launch copy has one concrete demo path.
 - README links to the demo GIF, quickstart, canonical example, and launch assets.

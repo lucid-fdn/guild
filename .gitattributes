@@ -1,0 +1,9 @@
+# Guild is TypeScript-first at the public agent-facing layer.
+# The Go implementation remains a native fallback and reference engine, but it is
+# not the primary product surface we want GitHub language stats to advertise.
+cli/** linguist-vendored
+pkg/** linguist-vendored
+server/** linguist-vendored
+
+# Generated API/spec artifacts should not dominate the repo language card.
+sdk/typescript/src/spec.ts linguist-generated

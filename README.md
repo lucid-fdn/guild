@@ -2,14 +2,14 @@
 
 [![CI](https://github.com/lucid-fdn/guild/actions/workflows/ci.yml/badge.svg)](https://github.com/lucid-fdn/guild/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Go install](https://img.shields.io/badge/go%20install-github.com%2Flucid--fdn%2Fguild-blue)](#install)
+[![TypeScript-first](https://img.shields.io/badge/TypeScript-first-3178c6)](#install)
 [![MCP server](https://img.shields.io/badge/MCP-guild--agentdesk--mcp-black)](docs/MCP_SETUP.md)
 
 Every agent run starts with a mandate and ends with proof.
 
 ![Guild demo](launch/demo.gif)
 
-Guild is an agent-first work contract for autonomous coding and research agents.
+Guild is a TypeScript-first agent work contract for autonomous coding and research agents.
 It gives agents a local desk they can consume directly: one mandate, scoped context, preflight guardrails, explicit claims, proof artifacts, handoffs, verification, and replay.
 
 It is not another orchestrator.
@@ -36,7 +36,9 @@ GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proo
 
 ## Start Here
 
-- Install the alpha CLI with `go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4`.
+- Use the TypeScript AgentDesk packages in `packages/agentdesk-*`.
+- Public install target: `npx guild-agentdesk`.
+- Current repo-local alpha command: `node packages/agentdesk-cli/dist/index.js`.
 - Run [AgentDesk](#agentdesk-local-agent-workflow) locally with no server.
 - Point agents at the executable [MCP server](adapters/mcp/README.md) with copy-paste [host setup](docs/MCP_SETUP.md).
 - Turn GitHub issues labeled `agent:ready` into mandates.
@@ -46,22 +48,24 @@ GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proo
 
 ## Install
 
-Alpha install path:
+TypeScript-first alpha path from a checkout:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4
-guild agentdesk init
-guild mcp serve
+corepack enable
+corepack pnpm install
+corepack pnpm run build:agentdesk-ts
+node packages/agentdesk-cli/dist/index.js init
+node packages/agentdesk-cli/dist/index.js mcp serve
 ```
 
 Bootstrap GitHub issue intake and CI in an existing repo:
 
 ```bash
 GITHUB_TOKEN="$(gh auth token)" \
-guild agentdesk bootstrap github --repo lucid-fdn/your-repo
+node packages/agentdesk-cli/dist/index.js bootstrap github --repo lucid-fdn/your-repo
 
 GITHUB_TOKEN="$(gh auth token)" \
-guild agentdesk issue create "Fix docs typo" \
+node packages/agentdesk-cli/dist/index.js issue create "Fix docs typo" \
   --repo lucid-fdn/your-repo \
   --scope "docs/**" \
   --acceptance "Docs are updated and proof is attached."
@@ -70,50 +74,59 @@ guild agentdesk issue create "Fix docs typo" \
 Copy-paste external demo:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4
+corepack enable
+corepack pnpm install
+corepack pnpm run build:agentdesk-ts
 
 GITHUB_TOKEN="$(gh auth token)" \
-guild agentdesk bootstrap github --repo lucid-fdn/your-repo
+node packages/agentdesk-cli/dist/index.js bootstrap github --repo lucid-fdn/your-repo
 
 GITHUB_TOKEN="$(gh auth token)" \
-guild agentdesk issue create "Fix docs typo" \
+node packages/agentdesk-cli/dist/index.js issue create "Fix docs typo" \
   --repo lucid-fdn/your-repo \
   --scope "docs/**" \
   --acceptance "Docs are updated and proof is attached."
 
 GITHUB_TOKEN="$(gh auth token)" \
-guild agentdesk next --source github --repo lucid-fdn/your-repo
+node packages/agentdesk-cli/dist/index.js next --source github --repo lucid-fdn/your-repo
 
-guild agentdesk claim --id <mandate-id> --agent codex
-guild agentdesk context compile --id <mandate-id> --role coder
-guild agentdesk preflight --id <mandate-id> --action write --path docs/example.md
-guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
-guild agentdesk proof add --id <mandate-id> --kind changed_files --path changed-files.json
-guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
-guild agentdesk verify --id <mandate-id>
-guild agentdesk replay export --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js claim --id <mandate-id> --agent codex
+node packages/agentdesk-cli/dist/index.js context compile --id <mandate-id> --role coder
+node packages/agentdesk-cli/dist/index.js preflight --id <mandate-id> --action write --path docs/example.md
+node packages/agentdesk-cli/dist/index.js proof add --id <mandate-id> --kind test_report --path test-results.xml
+node packages/agentdesk-cli/dist/index.js proof add --id <mandate-id> --kind changed_files --path changed-files.json
+node packages/agentdesk-cli/dist/index.js handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+node packages/agentdesk-cli/dist/index.js verify --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js replay export --id <mandate-id>
 ```
 
-Single-binary MCP path:
+Legacy/native Go path:
 
 ```bash
 go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.4
 guild mcp serve
 ```
 
-Repo-local TypeScript MCP server path:
+The Go CLI remains available as a native fallback, but the public product direction is TypeScript-first: CLI, MCP, GitHub integration, SDKs, and examples.
+
+## Language Strategy
+
+Guild is now TypeScript-first because agent users expect npm-native CLIs, MCP servers, GitHub tooling, and hackable SDKs.
+
+The historical Go implementation is kept as a native fallback and behavior reference, but it is intentionally excluded from GitHub language stats through `.gitattributes` so the repo advertises the product surface users should start with.
+
+Repo-local MCP server path:
 
 ```bash
 git clone https://github.com/lucid-fdn/guild.git
 cd guild
 corepack enable
-corepack pnpm install --frozen-lockfile
-go build -o bin/guild ./cli/cmd/guild
-GUILD_CLI="$(pwd)/bin/guild" corepack pnpm --dir adapters/mcp exec guild-agentdesk-mcp
+corepack pnpm install
+corepack pnpm run build:agentdesk-ts
+node packages/agentdesk-cli/dist/index.js mcp serve
 ```
 
-Packaging decision for the public alpha: use `go install` for the CLI and `guild mcp serve` for host integration.
-Do not publish an npm package until the final package scope/name is stable.
+Packaging decision for the next public alpha: publish the `guild-agentdesk` npm package once the name/scope is final.
 
 ## Why This Exists
 
@@ -147,20 +160,20 @@ AgentDesk is the zero-server path.
 It wraps `agentdesk.yaml` and `.agentdesk/` so agents can self-serve from a repo.
 
 ```bash
-go run ./cli/cmd/guild agentdesk init
-go run ./cli/cmd/guild agentdesk bootstrap github --repo lucid-fdn/app
-go run ./cli/cmd/guild agentdesk issue create "Fix failing auth tests" --repo lucid-fdn/app --scope "src/auth/**,tests/auth/**"
-go run ./cli/cmd/guild agentdesk mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
-go run ./cli/cmd/guild agentdesk next
-go run ./cli/cmd/guild agentdesk claim --id <mandate-id> --agent codex
-go run ./cli/cmd/guild agentdesk doctor --id <mandate-id>
-go run ./cli/cmd/guild agentdesk context compile --id <mandate-id> --role coder
-go run ./cli/cmd/guild agentdesk preflight --id <mandate-id> --action write --path src/auth/login.ts
-go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
-go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind changed_files --path changed-files.json
-go run ./cli/cmd/guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
-go run ./cli/cmd/guild agentdesk verify --id <mandate-id>
-go run ./cli/cmd/guild agentdesk replay export --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js init
+node packages/agentdesk-cli/dist/index.js bootstrap github --repo lucid-fdn/app
+node packages/agentdesk-cli/dist/index.js issue create "Fix failing auth tests" --repo lucid-fdn/app --scope "src/auth/**,tests/auth/**"
+node packages/agentdesk-cli/dist/index.js mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
+node packages/agentdesk-cli/dist/index.js next
+node packages/agentdesk-cli/dist/index.js claim --id <mandate-id> --agent codex
+node packages/agentdesk-cli/dist/index.js doctor --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js context compile --id <mandate-id> --role coder
+node packages/agentdesk-cli/dist/index.js preflight --id <mandate-id> --action write --path src/auth/login.ts
+node packages/agentdesk-cli/dist/index.js proof add --id <mandate-id> --kind test_report --path test-results.xml
+node packages/agentdesk-cli/dist/index.js proof add --id <mandate-id> --kind changed_files --path changed-files.json
+node packages/agentdesk-cli/dist/index.js handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+node packages/agentdesk-cli/dist/index.js verify --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js replay export --id <mandate-id>
 ```
 
 Use GitHub Issues as the human task source:
@@ -175,8 +188,8 @@ task_sources:
 Then an agent can run:
 
 ```bash
-GITHUB_TOKEN=... go run ./cli/cmd/guild agentdesk next --source github
-go run ./cli/cmd/guild agentdesk claim --id <mandate-id> --agent codex
+GITHUB_TOKEN=... node packages/agentdesk-cli/dist/index.js next --source github
+node packages/agentdesk-cli/dist/index.js claim --id <mandate-id> --agent codex
 ```
 
 Claims are local leases stored in `.agentdesk/claims/`.
@@ -188,7 +201,7 @@ Guild ships an executable local MCP server for agent hosts.
 It exposes AgentDesk as tools backed by the repo's `agentdesk.yaml` and `.agentdesk/` directory.
 
 ```bash
-guild mcp serve
+node packages/agentdesk-cli/dist/index.js mcp serve
 ```
 
 For Claude Desktop, Codex, OpenFang, OpenClaw, and generic MCP host configs, see [MCP Setup](docs/MCP_SETUP.md).
@@ -199,8 +212,8 @@ Example MCP config:
 {
   "mcpServers": {
     "guild-agentdesk": {
-      "command": "guild",
-      "args": ["mcp", "serve"],
+      "command": "node",
+      "args": ["/absolute/path/to/guild/packages/agentdesk-cli/dist/index.js", "mcp", "serve"],
       "env": {
         "GITHUB_REPOSITORY": "lucid-fdn/guild"
       }
@@ -258,8 +271,8 @@ Guild aims to make these portable objects boring, stable, and reusable:
 Use `agentdesk verify --github-report` to turn the work contract into a CI/PR report:
 
 ```bash
-go run ./cli/cmd/guild agentdesk replay export --id <mandate-id> --file .agentdesk/replay/replay.json
-go run ./cli/cmd/guild agentdesk verify --id <mandate-id> --github-report --replay-file .agentdesk/replay/replay.json
+node packages/agentdesk-cli/dist/index.js replay export --id <mandate-id> --file .agentdesk/replay/replay.json
+node packages/agentdesk-cli/dist/index.js verify --id <mandate-id> --github-report --replay-file .agentdesk/replay/replay.json
 ```
 
 The report includes:
@@ -318,14 +331,15 @@ guild/
   Makefile
   package.json
   pnpm-workspace.yaml
+  packages/
+    agentdesk-core/
+    agentdesk-cli/
+    agentdesk-github/
+    agentdesk-mcp/
   cli/
-    cmd/
-      guild/
-        main.go
+    cmd/guild/     # legacy/native Go fallback
   pkg/
-    spec/
-      models.go
-      validate/
+    spec/          # legacy/native Go fallback
   openapi/
     guild.v1alpha1.yaml
     README.md
@@ -436,7 +450,7 @@ Current bootstrap implementation:
 - governance policies, human approval requests, promotion gates, and commons registry entries
 - full simulation script for the one task/DRI/artifact/replay/promoted-learning story
 - neutral TypeScript adapter core for orchestrator-specific wrappers
-- single-binary `guild mcp serve` server plus MCP bridge package for reusable tool definitions and host compatibility tests
+- TypeScript-first `guild-agentdesk mcp serve` server plus MCP bridge package for reusable tool definitions and host compatibility tests
 - A2A-style bridge package with task/result mappers
 - LangGraph adapter package with a node-shaped bridge for real graph integration
 - adapter conformance profiles and a reusable `adapter-alpha` badge
@@ -508,20 +522,20 @@ go run ./cli/cmd/guild validate --kind workspace-constitution --file spec/exampl
 Run the agent-first local workflow without a server:
 
 ```bash
-go run ./cli/cmd/guild agentdesk init
-go run ./cli/cmd/guild agentdesk mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
-go run ./cli/cmd/guild agentdesk next
-go run ./cli/cmd/guild agentdesk claim --id <mandate-id> --agent codex
-go run ./cli/cmd/guild agentdesk next --source github --repo lucid-fdn/app --query "label:agent:ready state:open"
-go run ./cli/cmd/guild agentdesk context compile --id <mandate-id> --role coder
-go run ./cli/cmd/guild agentdesk preflight --id <mandate-id> --action write --path src/auth/login.ts
-go run ./cli/cmd/guild agentdesk approval request --id <mandate-id> --reason "Need owner consent"
-go run ./cli/cmd/guild agentdesk approval resolve --approval-id <approval-id> --decision approved
-go run ./cli/cmd/guild agentdesk proof add --id <mandate-id> --kind test_report --path test-results.xml
-go run ./cli/cmd/guild agentdesk handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
-go run ./cli/cmd/guild agentdesk verify --id <mandate-id>
-go run ./cli/cmd/guild agentdesk close --id <mandate-id>
-go run ./cli/cmd/guild agentdesk replay export --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js init
+node packages/agentdesk-cli/dist/index.js mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
+node packages/agentdesk-cli/dist/index.js next
+node packages/agentdesk-cli/dist/index.js claim --id <mandate-id> --agent codex
+node packages/agentdesk-cli/dist/index.js next --source github --repo lucid-fdn/app --query "label:agent:ready state:open"
+node packages/agentdesk-cli/dist/index.js context compile --id <mandate-id> --role coder
+node packages/agentdesk-cli/dist/index.js preflight --id <mandate-id> --action write --path src/auth/login.ts
+node packages/agentdesk-cli/dist/index.js approval request --id <mandate-id> --reason "Need owner consent"
+node packages/agentdesk-cli/dist/index.js approval resolve --approval-id <approval-id> --decision approved
+node packages/agentdesk-cli/dist/index.js proof add --id <mandate-id> --kind test_report --path test-results.xml
+node packages/agentdesk-cli/dist/index.js handoff create --id <mandate-id> --to reviewer --summary "Ready for review"
+node packages/agentdesk-cli/dist/index.js verify --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js close --id <mandate-id>
+node packages/agentdesk-cli/dist/index.js replay export --id <mandate-id>
 ```
 
 Use GitHub Issues as the human task source:
@@ -536,14 +550,14 @@ task_sources:
 Then agents can run:
 
 ```bash
-GITHUB_TOKEN=... go run ./cli/cmd/guild agentdesk next --source github
+GITHUB_TOKEN=... node packages/agentdesk-cli/dist/index.js next --source github
 ```
 
 In GitHub Actions, use `agentdesk verify --github-report` to write the PR/step report:
 
 ```bash
-go run ./cli/cmd/guild agentdesk replay export --id <mandate-id> --file .agentdesk/replay/replay.json
-go run ./cli/cmd/guild agentdesk verify --id <mandate-id> --github-report --replay-file .agentdesk/replay/replay.json
+node packages/agentdesk-cli/dist/index.js replay export --id <mandate-id> --file .agentdesk/replay/replay.json
+node packages/agentdesk-cli/dist/index.js verify --id <mandate-id> --github-report --replay-file .agentdesk/replay/replay.json
 ```
 
 The report includes:
@@ -577,7 +591,7 @@ make check-adapters
 Adapter packages:
 
 - `@guild/adapter-core` provides neutral builders for `Taskpack`, `DRI Binding`, and `Artifact`.
-- `@guild/adapter-mcp` exposes MCP tool definitions and handlers for package development; the preferred alpha server is the single-binary `guild mcp serve`.
+- `@lucid-fdn/agentdesk-mcp` exposes the TypeScript-first local MCP server; `@guild/adapter-mcp` remains for adapter development.
 - `@guild/adapter-a2a` maps A2A-style task/result envelopes into Guild institutional records.
 - `@guild/adapter-langgraph` provides a LangGraph-compatible node that submits Taskpack, DRI, and Artifact records while returning a graph state patch.
 
