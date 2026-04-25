@@ -8,7 +8,7 @@ Use it when you want Codex, Claude, OpenClaw, OpenFang, or another MCP-capable a
 ## 90-Second Agent Quickstart
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.1
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2
 guild agentdesk init
 guild agentdesk mandate create "Update MCP docs" --writable "docs/**,adapters/mcp/**"
 guild agentdesk doctor
@@ -135,6 +135,9 @@ The executable server exposes:
 Create issues with the `agent:ready` label, then run:
 
 ```bash
+GITHUB_TOKEN="$(gh auth token)" \
+guild agentdesk bootstrap github --repo lucid-fdn/guild
+
 GITHUB_TOKEN="$(gh auth token)" \
 GITHUB_REPOSITORY="lucid-fdn/guild" \
 GUILD_AGENTDESK_SOURCE="github" \

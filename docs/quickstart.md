@@ -15,7 +15,7 @@ Every agent run starts with a mandate and ends with proof.
 Public alpha install:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.1
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2
 guild agentdesk init
 guild agentdesk doctor
 ```
@@ -46,6 +46,23 @@ go run ./cli/cmd/guild agentdesk doctor --id <mandate-id>
 go run ./cli/cmd/guild agentdesk verify --id <mandate-id>
 go run ./cli/cmd/guild agentdesk replay export --id <mandate-id>
 ```
+
+## Bootstrap GitHub Intake
+
+In an existing GitHub repo:
+
+```bash
+GITHUB_TOKEN="$(gh auth token)" \
+guild agentdesk bootstrap github --repo lucid-fdn/your-repo
+```
+
+This creates:
+
+- `agentdesk.yaml` with local and GitHub issue task sources
+- `.agentdesk/` working directories
+- an `agent:ready` issue template
+- portable GitHub Actions workflows that install the pinned Guild CLI
+- `agent:ready` and priority labels when `GITHUB_TOKEN` is set
 
 ## Connect An MCP Host
 

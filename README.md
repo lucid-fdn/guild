@@ -36,7 +36,7 @@ GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proo
 
 ## Start Here
 
-- Install the alpha CLI with `go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.1`.
+- Install the alpha CLI with `go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2`.
 - Run [AgentDesk](#agentdesk-local-agent-workflow) locally with no server.
 - Point agents at the executable [MCP server](adapters/mcp/README.md) with copy-paste [host setup](docs/MCP_SETUP.md).
 - Turn GitHub issues labeled `agent:ready` into mandates.
@@ -49,15 +49,22 @@ GitHub issue / local task -> mandate -> claim -> bounded context -> work -> proo
 Alpha install path:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.1
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2
 guild agentdesk init
 guild mcp serve
+```
+
+Bootstrap GitHub issue intake and CI in an existing repo:
+
+```bash
+GITHUB_TOKEN="$(gh auth token)" \
+guild agentdesk bootstrap github --repo lucid-fdn/your-repo
 ```
 
 Single-binary MCP path:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.1
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2
 guild mcp serve
 ```
 
@@ -108,6 +115,7 @@ It wraps `agentdesk.yaml` and `.agentdesk/` so agents can self-serve from a repo
 
 ```bash
 go run ./cli/cmd/guild agentdesk init
+go run ./cli/cmd/guild agentdesk bootstrap github --repo lucid-fdn/app
 go run ./cli/cmd/guild agentdesk mandate create "Fix failing auth tests" --writable "src/auth/**,tests/auth/**"
 go run ./cli/cmd/guild agentdesk next
 go run ./cli/cmd/guild agentdesk claim --id <mandate-id> --agent codex

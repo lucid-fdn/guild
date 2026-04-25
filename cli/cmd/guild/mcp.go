@@ -115,7 +115,7 @@ func handleMCPRequest(request mcpRequest) *mcpResponse {
 			},
 			"serverInfo": map[string]any{
 				"name":    "guild-agentdesk-mcp",
-				"version": "0.1.0-alpha.1",
+				"version": "0.1.0-alpha.2",
 			},
 		})
 	case "tools/list":

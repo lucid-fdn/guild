@@ -609,6 +609,65 @@ func TestAgentDeskVerifyPublishesGitHubReport(t *testing.T) {
 	}
 }
 
+func TestAgentDeskBootstrapGitHubCreatesPortableSetup(t *testing.T) {
+	dir := t.TempDir()
+	restore := chdir(t, dir)
+	defer restore()
+
+	var createdLabels []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost || r.URL.Path != "/repos/lucid-fdn/dogfood/labels" {
+			http.NotFound(w, r)
+			return
+		}
+		var payload map[string]string
+		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+			t.Fatal(err)
+		}
+		createdLabels = append(createdLabels, payload["name"])
+		w.WriteHeader(http.StatusCreated)
+		writeTestJSON(t, w, payload)
+	}))
+	defer server.Close()
+	t.Setenv("GITHUB_API_URL", server.URL)
+	t.Setenv("GITHUB_TOKEN", "test-token")
+
+	var stdout bytes.Buffer
+	if err := run([]string{"agentdesk", "bootstrap", "github", "--repo", "lucid-fdn/dogfood", "--workspace", "dogfood"}, &stdout, ioDiscard()); err != nil {
+		t.Fatalf("bootstrap failed: %v output=%s", err, stdout.String())
+	}
+	var report agentDeskBootstrapReport
+	if err := json.Unmarshal(stdout.Bytes(), &report); err != nil {
+		t.Fatal(err)
+	}
+	if !report.Ready {
+		t.Fatalf("expected ready bootstrap report: %#v", report)
+	}
+	if !containsString(createdLabels, "agent:ready") {
+		t.Fatalf("expected agent:ready label, got %#v", createdLabels)
+	}
+	config, err := os.ReadFile("agentdesk.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(config), "repo: lucid-fdn/dogfood") {
+		t.Fatalf("expected github repo source in config:\n%s", string(config))
+	}
+	workflow, err := os.ReadFile(".github/workflows/agent-work-contract.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(workflow), "go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2") {
+		t.Fatalf("expected portable go install workflow:\n%s", string(workflow))
+	}
+	if !strings.Contains(string(workflow), "guild agentdesk verify") {
+		t.Fatalf("expected workflow to verify AgentDesk contract:\n%s", string(workflow))
+	}
+	if _, err := os.Stat(".github/ISSUE_TEMPLATE/agent-ready.yml"); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestAgentDeskDoctorReportsReady(t *testing.T) {
 	dir := t.TempDir()
 	restore := chdir(t, dir)
@@ -833,6 +892,15 @@ func chdir(t *testing.T, dir string) func() {
 }
 
 func containsAny(values []any, want string) bool {
+	for _, value := range values {
+		if value == want {
+			return true
+		}
+	}
+	return false
+}
+
+func containsString(values []string, want string) bool {
 	for _, value := range values {
 		if value == want {
 			return true

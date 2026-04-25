@@ -43,7 +43,7 @@ Guild gives agents the work contract.
 Install the alpha:
 
 ```bash
-go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.1
+go install github.com/lucid-fdn/guild/cli/cmd/guild@v0.1.0-alpha.2
 guild agentdesk init
 guild agentdesk doctor
 ```
